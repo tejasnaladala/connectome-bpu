@@ -34,3 +34,10 @@ celegans_male_erdos_renyi,MNIST,559,0.9808,0.00925704016125039,269.76,444974,312
 celegans_male_barabasi_albert,MNIST,559,0.9808,0.007073764412578613,278.99,444974,312481,20,0.001,42,celegans_male,barabasi_albert
 celegans_male_watts_strogatz,MNIST,559,0.9818,0.0029787347796866254,268.49,444974,312481,20,0.001,42,celegans_male,watts_strogatz
 celegans_male_degree_preserved,MNIST,559,0.9786,0.009442383503684822,273.56,444974,312481,20,0.001,42,celegans_male,degree_preserved
+celegans_male,MNIST,559,0.9833,0.00545467742961888,273.32,444974,312481,20,0.001,43,celegans_male,biological
+celegans_male_erdos_renyi,MNIST,559,0.9753,0.013110417503131277,268.0,444974,312481,20,0.001,43,celegans_male,erdos_renyi
+celegans_male_barabasi_albert,MNIST,559,0.9771,0.008641932031030801,250.31,444974,312481,20,0.001,43,celegans_male,barabasi_albert
+celegans_male_watts_strogatz,MNIST,559,0.9825,0.01100067937414215,250.56,444974,312481,20,0.001,43,celegans_male,watts_strogatz
+celegans_male_degree_preserved,MNIST,559,0.981,0.005999303771617777,261.34,444974,312481,20,0.001,43,celegans_male,degree_preserved
+celegans_male,MNIST,559,0.9792,0.0032485688246959355,251.78,444974,312481,20,0.001,44,celegans_male,biological
+celegans_male_erdos_renyi,MNIST,559,0.9793,0.010468398894379028,262.98,444974,312481,20,0.001,44,celegans_male,erdos_renyi
