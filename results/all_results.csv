@@ -57,3 +57,16 @@ drosophila_larva_degree_preserved,MNIST,2952,0.9829,0.0075561392620540095,305.78
 drosophila_larva,MNIST,2952,0.9784,0.008043721457700324,286.58,2349802,8714304,20,0.001,44,drosophila_larva,biological
 drosophila_larva_erdos_renyi,MNIST,2952,0.979,0.034700468460988385,382.05,2349802,8714304,20,0.001,44,drosophila_larva,erdos_renyi
 drosophila_larva_barabasi_albert,MNIST,2952,0.9764,0.027868237938496424,719.96,2349802,8714304,20,0.001,44,drosophila_larva,barabasi_albert
+drosophila_larva_watts_strogatz,MNIST,2952,0.9766,0.030013526236582586,4404.46,2349802,8714304,20,0.001,44,drosophila_larva,watts_strogatz
+drosophila_larva_degree_preserved,MNIST,2952,0.9831,0.01201067760654145,234.78,2349802,8714304,20,0.001,44,drosophila_larva,degree_preserved
+adult_antennal_lobe,MNIST,3739,0.9791,0.009043941496522465,181.53,2976254,13980121,20,0.001,42,adult_antennal_lobe,biological
+adult_antennal_lobe_erdos_renyi,MNIST,3739,0.9727,0.06925304555914982,166.72,2976254,13980121,20,0.001,42,adult_antennal_lobe,erdos_renyi
+adult_antennal_lobe_barabasi_albert,MNIST,3739,0.9764,0.03437046454292448,193.61,2976254,13980121,20,0.001,42,adult_antennal_lobe,barabasi_albert
+adult_antennal_lobe_watts_strogatz,MNIST,3739,0.9747,0.05028513719185747,293.42,2976254,13980121,20,0.001,42,adult_antennal_lobe,watts_strogatz
+adult_antennal_lobe_degree_preserved,MNIST,3739,0.9825,0.007662599640718925,224.7,2976254,13980121,20,0.001,42,adult_antennal_lobe,degree_preserved
+adult_antennal_lobe,MNIST,3739,0.9812,0.006998814177179099,242.93,2976254,13980121,20,0.001,43,adult_antennal_lobe,biological
+adult_antennal_lobe_erdos_renyi,MNIST,3739,0.9763,0.06631520273544961,258.47,2976254,13980121,20,0.001,43,adult_antennal_lobe,erdos_renyi
+adult_antennal_lobe_barabasi_albert,MNIST,3739,0.9797,0.03765435577653056,295.76,2976254,13980121,20,0.001,43,adult_antennal_lobe,barabasi_albert
+adult_antennal_lobe_watts_strogatz,MNIST,3739,0.9766,0.04619052470163128,732.91,2976254,13980121,20,0.001,43,adult_antennal_lobe,watts_strogatz
+adult_antennal_lobe_degree_preserved,MNIST,3739,0.9823,0.006376224939359936,292.03,2976254,13980121,20,0.001,43,adult_antennal_lobe,degree_preserved
+adult_antennal_lobe,MNIST,3739,0.9841,0.006478979407180605,320.44,2976254,13980121,20,0.001,44,adult_antennal_lobe,biological
