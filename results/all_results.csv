@@ -46,3 +46,9 @@ celegans_male_watts_strogatz,MNIST,559,0.9808,0.010994922223966693,257.59,444974
 celegans_male_degree_preserved,MNIST,559,0.9793,0.005682403769021157,244.16,444974,312481,20,0.001,44,celegans_male,degree_preserved
 drosophila_larva,MNIST,2952,0.9796,0.01025052881439986,317.05,2349802,8714304,20,0.001,42,drosophila_larva,biological
 drosophila_larva_erdos_renyi,MNIST,2952,0.9756,0.04928192153955487,333.71,2349802,8714304,20,0.001,42,drosophila_larva,erdos_renyi
+drosophila_larva_barabasi_albert,MNIST,2952,0.9814,0.023662136788342062,362.29,2349802,8714304,20,0.001,42,drosophila_larva,barabasi_albert
+drosophila_larva_watts_strogatz,MNIST,2952,0.9782,0.035273646578933095,326.67,2349802,8714304,20,0.001,42,drosophila_larva,watts_strogatz
+drosophila_larva_degree_preserved,MNIST,2952,0.9832,0.009959604079817204,344.34,2349802,8714304,20,0.001,42,drosophila_larva,degree_preserved
+drosophila_larva,MNIST,2952,0.9831,0.009789650954256704,259.5,2349802,8714304,20,0.001,43,drosophila_larva,biological
+drosophila_larva_erdos_renyi,MNIST,2952,0.9779,0.044035541210173945,276.64,2349802,8714304,20,0.001,43,drosophila_larva,erdos_renyi
+drosophila_larva_barabasi_albert,MNIST,2952,0.9779,0.02724835154782683,1426.49,2349802,8714304,20,0.001,43,drosophila_larva,barabasi_albert
