@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+data/mnist/
+data/fashion_mnist/
+data/raw/
+*.egg-info/
+.env
+out
+output
+*.log
+resultsexperiment_log.txt
+5}
