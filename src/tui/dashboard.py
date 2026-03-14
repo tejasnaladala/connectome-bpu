@@ -1,24 +1,18 @@
 #!/usr/bin/env python3
 """
-BPU Connectome Experiment Dashboard -- Gamified TUI
-====================================================
-Live terminal dashboard with XP system, achievements, organism leaderboard,
-bio-vs-random battle tracker, levels, and streaks.
+BPU Connectome Experiment Dashboard -- Retro Terminal Edition
+=============================================================
+CRT-style phosphor terminal with live experiment tracking,
+GPU telemetry, hypothesis testing, and statistical analysis.
 
-Usage: python -m src.tui.dashboard
-       python src/tui/dashboard.py
+Usage: python src/tui/dashboard.py
 """
-import csv
-import os
-import subprocess
-import sys
-import time
-import math
+import csv, os, subprocess, sys, time, math, random
 from pathlib import Path
 from datetime import datetime, timedelta
 from collections import defaultdict
+import statistics
 
-# Force UTF-8 on Windows
 if sys.platform == "win32":
     os.environ["PYTHONIOENCODING"] = "utf-8"
 
@@ -30,629 +24,485 @@ from rich.table import Table
 from rich.text import Text
 from rich import box
 
-# -- Project root ---------------------------------------------------------
 ROOT = Path(__file__).resolve().parent.parent.parent
 RESULTS_CSV = ROOT / "results" / "all_results.csv"
 METRICS_CSV = ROOT / "results" / "graph_metrics.csv"
 
-# -- Constants -------------------------------------------------------------
 ORGANISMS = [
-    ("ciona", 177, "[cyan]CI[/]", "Tunicate"),
-    ("celegans_herm", 419, "[green]CH[/]", "Nematode F"),
-    ("celegans_male", 559, "[green]CM[/]", "Nematode M"),
-    ("drosophila_larva", 2952, "[yellow]DL[/]", "Fruit Fly L"),
-    ("adult_optic_lobe_medulla", 4000, "[magenta]OM[/]", "Optic Lobe"),
-    ("adult_mushroom_body", 4000, "[magenta]MB[/]", "Mushroom B"),
-    ("adult_central_complex", 4000, "[magenta]CX[/]", "Central Cx"),
-    ("adult_antennal_lobe", 3739, "[magenta]AL[/]", "Antennal L"),
-    ("adult_subesophageal_zone", 4000, "[magenta]SZ[/]", "Subesoph Z"),
-    ("adult_lateral_horn", 4000, "[magenta]LH[/]", "Lateral H"),
+    ("ciona", 177, "Ciona intestinalis"),
+    ("celegans_herm", 419, "C. elegans (herm)"),
+    ("celegans_male", 559, "C. elegans (male)"),
+    ("drosophila_larva", 2952, "Drosophila larva"),
+    ("adult_optic_lobe_medulla", 4000, "Optic Medulla"),
+    ("adult_mushroom_body", 4000, "Mushroom Body"),
+    ("adult_central_complex", 4000, "Central Complex"),
+    ("adult_antennal_lobe", 3739, "Antennal Lobe"),
+    ("adult_subesophageal_zone", 4000, "Subesoph. Zone"),
+    ("adult_lateral_horn", 4000, "Lateral Horn"),
 ]
-
 TASKS = ["MNIST", "FashionMNIST", "CIFAR10", "SequentialMNIST", "Audio", "CartPole"]
 CONTROLS = ["erdos_renyi", "barabasi_albert", "watts_strogatz", "degree_preserved"]
 SEEDS = [42, 43, 44]
+NETS_PER_ORG = 1 + len(CONTROLS)
+EXPS_PER_TASK = len(ORGANISMS) * NETS_PER_ORG * len(SEEDS)
+TOTAL = len(ORGANISMS) * NETS_PER_ORG * len(SEEDS) * len(TASKS)
 
-TOTAL_EXPERIMENTS = len(ORGANISMS) * (1 + len(CONTROLS)) * len(SEEDS) * len(TASKS)
-
-# -- XP & Level System -----------------------------------------------------
-XP_PER_EXPERIMENT = 100
-XP_PER_HIGH_ACC = 50       # bonus for acc > 0.95
-XP_PER_ORGANISM_DONE = 500  # all experiments for one organism
-XP_PER_TASK_DONE = 300     # all experiments for one task
-XP_PER_METRIC = 200        # graph metric computed
-
-LEVEL_THRESHOLDS = [
-    (0, "Neuron Novice", "[dim]"),
-    (500, "Synapse Scout", "[bright_blue]"),
-    (1500, "Dendrite Developer", "[cyan]"),
-    (3000, "Axon Architect", "[green]"),
-    (6000, "Cortex Commander", "[yellow]"),
-    (10000, "Lobe Lord", "[bright_yellow]"),
-    (18000, "Brain Baron", "[bright_magenta]"),
-    (30000, "Connectome Champion", "[bright_red]"),
-    (50000, "Neural Nexus", "[bold bright_white]"),
-    (80000, "BPU Grandmaster", "[bold white on blue]"),
+# -- Retro Terminal Animations --
+SCAN_FRAMES = [
+    ">>>------->",
+    "->>>------>",
+    "-->>>----->",
+    "--->>>---->",
+    "---->>>--->",
+    "----->>>-->",
+    "------>>>->",
+    "------->>>>",
+]
+CURSOR_FRAMES = ["_", " "]
+SIGNAL_FRAMES = [
+    "[----|----]",
+    "[--+-|----]",
+    "[----|--+-]",
+    "[--+-|--+-]",
 ]
 
-# -- Achievements -----------------------------------------------------------
-ACHIEVEMENTS = {
-    "first_blood":     ("First Blood",       "Complete 1 experiment",           1),
-    "ten_strong":      ("Ten Strong",        "Complete 10 experiments",         10),
-    "century":         ("Century Club",      "Complete 100 experiments",       100),
-    "half_marathon":   ("Half Marathon",     "Complete 450 experiments",       450),
-    "full_battery":    ("Full Battery",      "Complete all 900 experiments",   900),
-    "sharpshooter":    ("Sharpshooter",      "Achieve >98% accuracy",          -1),
-    "bio_wins":        ("Biology Wins",      "Bio beats ALL 4 controls",       -2),
-    "species_complete":("Species Complete",  "Finish all tasks for 1 org",     -3),
-    "metrics_master":  ("Metrics Master",    "All 10 graph metrics done",      -4),
-    "speed_demon":     ("Speed Demon",       "Experiment under 60 seconds",    -5),
-    "gpu_blazing":     ("GPU Blazing",       "GPU util above 90%",             -6),
-    "small_world":     ("Small World",       "Find SW sigma > 10",             -7),
-}
+# -- Retro color palette: amber CRT + green phosphor --
+AMBER = "bold yellow"
+DIM_AMBER = "yellow"
+GREEN = "bold green"
+DIM_GREEN = "green"
+PHOSPHOR = "bright_green"
+COLD = "bright_cyan"
+WARN = "bright_red"
+DIM = "dim"
 
-# -- Animation frames (ASCII-safe) -----------------------------------------
-NEURON_FRAMES = [" o--o ", " o---o", "o----o", " o---o"]
-BRAIN_FRAMES = [
-    [" o-O-o ", " O-o-O ", " o-O-o "],
-    [" O-o-O ", " o-O-o ", " O-o-O "],
-    [" o-o-O ", " O-O-o ", " o-o-O "],
-]
-GPU_FRAMES = [
-    "_..:||:.._..:||:..",
-    ".:||:.._..::||:._.",
-    ":||:.._..::||:._.:.",
-    "||:.._..::||:._.:||",
-    "|:.._..::||:._.:||:",
-    ":.._..::||:._.:||:.",
-    ".._..::||:._.:||:..",
-    "._..::||:._.:||:.._",
-]
-BATTLE_FRAMES = [
-    " [BIO] >>---> [RNG] ",
-    " [BIO] >>>--> [RNG] ",
-    " [BIO] >>>>-> [RNG] ",
-    " [BIO] >>>>>  [RNG] ",
-]
-
-# -- Data loaders -----------------------------------------------------------
-def load_results():
-    results = []
-    if RESULTS_CSV.exists():
-        with open(RESULTS_CSV, "r") as f:
+def load_csv(path):
+    rows = []
+    if path.exists():
+        with open(path, "r") as f:
             for row in csv.DictReader(f):
-                results.append(row)
-    return results
+                rows.append(row)
+    return rows
 
-def load_metrics():
-    metrics = []
-    if METRICS_CSV.exists():
-        with open(METRICS_CSV, "r") as f:
-            for row in csv.DictReader(f):
-                metrics.append(row)
-    return metrics
-
-def get_gpu_info():
+def gpu_info():
     try:
-        result = subprocess.run(
-            ["nvidia-smi", "--query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu,power.draw",
+        r = subprocess.run(
+            ["nvidia-smi", "--query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu,power.draw,clocks.gr,clocks.mem,fan.speed",
              "--format=csv,noheader,nounits"],
-            capture_output=True, text=True, timeout=5
-        )
-        if result.returncode == 0:
-            parts = result.stdout.strip().split(",")
-            return {
-                "util": int(parts[0].strip()),
-                "mem_used": int(parts[1].strip()),
-                "mem_total": int(parts[2].strip()),
-                "temp": int(parts[3].strip()),
-                "power": float(parts[4].strip()),
-            }
+            capture_output=True, text=True, timeout=5)
+        if r.returncode == 0:
+            p = r.stdout.strip().split(",")
+            return {"util": int(p[0]), "mem_used": int(p[1]), "mem_total": int(p[2]),
+                    "temp": int(p[3]), "power": float(p[4]),
+                    "clk_gpu": p[5].strip(), "clk_mem": p[6].strip(), "fan": p[7].strip()}
     except Exception:
         pass
     return None
 
-def get_gpu_processes():
+def gpu_procs():
     try:
-        result = subprocess.run(
-            ["nvidia-smi", "--query-compute-apps=pid", "--format=csv,noheader"],
-            capture_output=True, text=True, timeout=5
-        )
-        if result.returncode == 0:
-            return len([l for l in result.stdout.strip().split("\n") if l.strip()])
+        r = subprocess.run(["nvidia-smi", "--query-compute-apps=pid,used_memory",
+                            "--format=csv,noheader,nounits"],
+                           capture_output=True, text=True, timeout=5)
+        if r.returncode == 0:
+            lines = [l.strip() for l in r.stdout.strip().split("\n") if l.strip()]
+            return [{"pid": l.split(",")[0].strip(), "mem": l.split(",")[1].strip() if "," in l else "?"} for l in lines]
     except Exception:
         pass
-    return 0
+    return []
 
-# -- Gamification Engine ----------------------------------------------------
-def compute_xp(results, metrics):
-    xp = len(results) * XP_PER_EXPERIMENT
-    xp += len(metrics) * XP_PER_METRIC
+def safe_float(val, default=0.0):
+    try: return float(val)
+    except (ValueError, TypeError): return default
 
-    # High accuracy bonuses
-    for r in results:
-        try:
-            if float(r.get("accuracy", 0)) > 0.95:
-                xp += XP_PER_HIGH_ACC
-        except (ValueError, TypeError):
-            pass
+def cohen_d(g1, g2):
+    if len(g1) < 1 or len(g2) < 1: return 0.0
+    m1, m2 = statistics.mean(g1), statistics.mean(g2)
+    if len(g1) < 2 and len(g2) < 2: return 0.0
+    s1 = statistics.stdev(g1) if len(g1) > 1 else 0.001
+    s2 = statistics.stdev(g2) if len(g2) > 1 else 0.001
+    ps = math.sqrt((s1**2 + s2**2) / 2)
+    return (m1 - m2) / ps if ps > 0 else 0.0
 
-    # Organism completion bonus
-    for org_name, _, _, _ in ORGANISMS:
-        org_exps = [r for r in results if r.get("organism") == org_name or
-                    r.get("name", "").startswith(org_name)]
-        expected = (1 + len(CONTROLS)) * len(SEEDS) * len(TASKS)
-        if len(org_exps) >= expected:
-            xp += XP_PER_ORGANISM_DONE
-
-    # Task completion bonus
-    for task in TASKS:
-        task_exps = [r for r in results if r.get("task") == task]
-        expected = len(ORGANISMS) * (1 + len(CONTROLS)) * len(SEEDS)
-        if len(task_exps) >= expected:
-            xp += XP_PER_TASK_DONE
-
-    return xp
-
-def get_level(xp):
-    level_name = LEVEL_THRESHOLDS[0][1]
-    level_style = LEVEL_THRESHOLDS[0][2]
-    level_num = 1
-    next_threshold = LEVEL_THRESHOLDS[1][0] if len(LEVEL_THRESHOLDS) > 1 else xp + 1
-    for i, (threshold, name, style) in enumerate(LEVEL_THRESHOLDS):
-        if xp >= threshold:
-            level_name = name
-            level_style = style
-            level_num = i + 1
-            next_threshold = LEVEL_THRESHOLDS[i + 1][0] if i + 1 < len(LEVEL_THRESHOLDS) else threshold + 10000
-    return level_num, level_name, level_style, next_threshold
-
-def check_achievements(results, metrics, gpu_info):
-    unlocked = []
-    n = len(results)
-
-    if n >= 1: unlocked.append("first_blood")
-    if n >= 10: unlocked.append("ten_strong")
-    if n >= 100: unlocked.append("century")
-    if n >= 450: unlocked.append("half_marathon")
-    if n >= 900: unlocked.append("full_battery")
-
-    # Sharpshooter
-    for r in results:
-        try:
-            if float(r.get("accuracy", 0)) > 0.98:
-                unlocked.append("sharpshooter")
-                break
-        except (ValueError, TypeError):
-            pass
-
-    # Bio wins - check if bio > all 4 controls for any organism
-    for org_name, _, _, _ in ORGANISMS:
-        bio_accs = [float(r["accuracy"]) for r in results
-                    if r.get("name") == org_name and r.get("type") == "biological"]
-        if not bio_accs:
-            continue
-        bio_mean = sum(bio_accs) / len(bio_accs)
-        all_ctrl_beaten = True
-        ctrl_count = 0
-        for ctrl in CONTROLS:
-            ctrl_accs = [float(r["accuracy"]) for r in results
-                         if r.get("name") == f"{org_name}_{ctrl}"]
-            if ctrl_accs:
-                ctrl_count += 1
-                if sum(ctrl_accs)/len(ctrl_accs) >= bio_mean:
-                    all_ctrl_beaten = False
-        if all_ctrl_beaten and ctrl_count == 4:
-            unlocked.append("bio_wins")
-            break
-
-    # Species complete
-    for org_name, _, _, _ in ORGANISMS:
-        org_exps = [r for r in results if r.get("organism") == org_name or
-                    r.get("name", "").startswith(org_name)]
-        expected = (1 + len(CONTROLS)) * len(SEEDS) * len(TASKS)
-        if len(org_exps) >= expected:
-            unlocked.append("species_complete")
-            break
-
-    # Metrics master
-    if len(metrics) >= 10:
-        unlocked.append("metrics_master")
-
-    # Speed demon
-    for r in results:
-        try:
-            if float(r.get("train_time_sec", 9999)) < 60:
-                unlocked.append("speed_demon")
-                break
-        except (ValueError, TypeError):
-            pass
-
-    # GPU blazing
-    if gpu_info and gpu_info.get("util", 0) > 90:
-        unlocked.append("gpu_blazing")
-
-    # Small world
-    for m in metrics:
-        try:
-            if float(m.get("small_world_sigma", 0)) > 10:
-                unlocked.append("small_world")
-                break
-        except (ValueError, TypeError):
-            pass
-
-    return list(set(unlocked))
+def pearson_r(xs, ys):
+    if len(xs) < 3: return 0.0
+    mx, my = statistics.mean(xs), statistics.mean(ys)
+    sx = math.sqrt(sum((x - mx)**2 for x in xs))
+    sy = math.sqrt(sum((y - my)**2 for y in ys))
+    if sx == 0 or sy == 0: return 0.0
+    return sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / (sx * sy)
 
 
-# -- Panel Builders ---------------------------------------------------------
-def build_header(frame, xp, level_num, level_name, level_style, next_xp):
-    gpu_wave = GPU_FRAMES[frame % len(GPU_FRAMES)]
-    xp_to_next = next_xp - xp
-    xp_in_level = xp - (LEVEL_THRESHOLDS[level_num - 1][0] if level_num > 0 else 0)
-    xp_level_range = next_xp - (LEVEL_THRESHOLDS[level_num - 1][0] if level_num > 0 else 0)
-    xp_pct = min(xp_in_level / max(xp_level_range, 1), 1.0)
-    xp_bar_w = 20
-    xp_filled = int(xp_pct * xp_bar_w)
+# -- Panels ----------------------------------------------------------------
+
+def header_panel(results, frame):
+    done = len(results)
+    pct = done / max(TOTAL, 1) * 100
+    times = [safe_float(r.get("train_time_sec")) for r in results if safe_float(r.get("train_time_sec")) > 0]
+    avg_t = statistics.mean(times) if times else 0
+    n_procs = max(len(gpu_procs()), 1)
+    remaining = TOTAL - done
+    eta_s = (remaining * avg_t) / n_procs if avg_t > 0 else 0
+    eta_td = timedelta(seconds=int(eta_s)) if eta_s > 0 else None
+    finish = (datetime.now() + timedelta(seconds=eta_s)).strftime("%b %d %H:%M") if eta_s > 0 else "---"
+
+    scan = SCAN_FRAMES[frame % len(SCAN_FRAMES)]
+    cursor = CURSOR_FRAMES[frame % len(CURSOR_FRAMES)]
+
+    bar_w = 40
+    filled = int(pct / 100 * bar_w)
 
     t = Text()
-    t.append("+=================================================================+\n", style="bold cyan")
-    t.append("|  ", style="bold cyan")
-    t.append(" BIOLOGICAL PROCESSING UNIT ", style="bold white on blue")
-    t.append("  ", style="bold cyan")
-    t.append(f"LVL {level_num} ", style="bold bright_yellow")
-    t.append(f"{level_style}{level_name}[/]")
-    t.append("  |\n", style="bold cyan")
-    t.append("|  ", style="bold cyan")
-    t.append(f"XP: {xp:,}  ", style="bold bright_yellow")
-    t.append(f"[bright_yellow]{'#' * xp_filled}[/][dim]{'.' * (xp_bar_w - xp_filled)}[/]")
-    t.append(f"  {xp_to_next:,} to next", style="dim")
-    t.append("  |\n", style="bold cyan")
-    t.append(f"|  GPU: ", style="bold cyan")
-    t.append(f"{gpu_wave}", style="bold green")
-    t.append(f"  {datetime.now().strftime('%H:%M:%S')}", style="dim")
-    t.append("  |\n".rjust(24), style="bold cyan")
-    t.append("+=================================================================+", style="bold cyan")
+    t.append("  CONNECTOME ARCHITECTURE BENCHMARK ", style="bold bright_white on dark_green")
+    t.append(f"  {scan}", style=DIM_GREEN)
+    t.append(f"  {datetime.now().strftime('%H:%M:%S')}{cursor}\n", style=DIM)
 
-    return Panel(t, box=box.SIMPLE, style="bold cyan")
+    t.append(f" [{PHOSPHOR}]{'=' * filled}[/][{DIM}]{'-' * (bar_w - filled)}[/]")
+    t.append(f" [{GREEN}]{done}[/]/{TOTAL} [{AMBER}]{pct:.1f}%[/]  ")
+    t.append(f"ETA [{COLD}]{eta_td or '---'}[/]  ")
+    t.append(f"DONE [{COLD}]{finish}[/]  ")
+    t.append(f"~{avg_t:.0f}s/exp  {n_procs} proc", style=DIM)
 
+    return Panel(t, border_style=DIM_GREEN, box=box.DOUBLE)
 
-def build_organism_panel(results, frame):
+def gpu_panel(frame):
+    g = gpu_info()
+    procs = gpu_procs()
+    signal = SIGNAL_FRAMES[frame % len(SIGNAL_FRAMES)]
+    if not g:
+        return Panel(f"[{DIM}]{signal} GPU OFFLINE {signal}[/]", title=f"[{WARN}]GPU[/]", border_style="red")
+
+    t = Text()
+    bar_w = 25
+    for label, val, mx, unit in [("UTL", g["util"], 100, "%"), ("MEM", g["mem_used"], g["mem_total"], "MB")]:
+        pct_v = val / max(mx, 1) * 100
+        filled = int(pct_v / 100 * bar_w)
+        c = PHOSPHOR if pct_v < 60 else DIM_AMBER if pct_v < 85 else WARN
+        t.append(f" {label} [{c}]{'|' * filled}[/][{DIM}]{'.' * (bar_w - filled)}[/] {val}/{mx}{unit}\n")
+
+    tc = PHOSPHOR if g["temp"] < 70 else DIM_AMBER if g["temp"] < 85 else WARN
+    t.append(f" [{tc}]{g['temp']}C[/] {g['power']:.0f}W  [{DIM}]{g['clk_gpu']}MHz  Fan:{g['fan']}[/]")
+    t.append(f" [{DIM_GREEN}]{signal}[/]")
+    if procs:
+        t.append(f"\n [{DIM_GREEN}]PID: {', '.join(p['pid'] for p in procs)}[/]")
+
+    return Panel(t, title=f"[{GREEN}]RTX 5070 Ti[/]", border_style=DIM_GREEN, box=box.HEAVY)
+
+def organism_panel(results, frame):
     table = Table(box=box.SIMPLE_HEAVY, expand=True, show_header=True,
                   header_style="bold bright_white", padding=(0, 1))
-    table.add_column("", width=3, justify="center")
-    table.add_column("Organism", style="bold", width=16)
-    table.add_column("N", justify="right", width=6, style="cyan")
-    table.add_column("Progress", justify="center", width=14)
-    table.add_column("Best", justify="right", width=8)
-    table.add_column("Rank", justify="center", width=6)
+    table.add_column("Organism", width=18, style=DIM_GREEN)
+    table.add_column("N", justify="right", width=5, style=DIM_AMBER)
+    table.add_column("Done", justify="right", width=9)
+    table.add_column("Progress", width=20)
+    table.add_column("Bio", justify="right", width=7)
+    table.add_column("Ctrl", justify="right", width=7)
+    table.add_column("Delta", justify="right", width=8)
+    table.add_column("", width=3)
 
-    # Compute leaderboard ranking by best bio accuracy
-    org_best = {}
-    for org_name, n, emoji, label in ORGANISMS:
-        bio = [r for r in results if r.get("name") == org_name and r.get("type") == "biological"]
-        if bio:
-            org_best[org_name] = max(float(r["accuracy"]) for r in bio)
-    ranked = sorted(org_best.items(), key=lambda x: -x[1])
-    rank_map = {name: i+1 for i, (name, _) in enumerate(ranked)}
-
-    for org_name, n_neurons, emoji, label in ORGANISMS:
-        all_org = [r for r in results if r.get("organism") == org_name or
-                   r.get("name", "").startswith(org_name)]
-        expected = (1 + len(CONTROLS)) * len(SEEDS) * len(TASKS)
+    for i, (org_name, n, label) in enumerate(ORGANISMS):
+        all_org = [r for r in results if r.get("organism") == org_name or r.get("name", "").startswith(org_name)]
+        expected = NETS_PER_ORG * len(SEEDS) * len(TASKS)
         done = len(all_org)
 
-        best_acc = ""
-        if org_name in org_best:
-            best_acc = f"[bold green]{org_best[org_name]:.4f}[/]"
+        bio = [safe_float(r["accuracy"]) for r in all_org if r.get("type") == "biological"]
+        ctrl = [safe_float(r["accuracy"]) for r in all_org if r.get("type") != "biological"]
 
-        # Progress bar
         pct = done / max(expected, 1)
-        bar_len = 8
+        bar_len = 12
         filled = int(pct * bar_len)
         if done == 0:
-            bar = f"[dim]{'.' * bar_len}[/] 0"
+            bar = f"[{DIM}]{'.' * bar_len}[/]"
         elif done < expected:
-            neuron = NEURON_FRAMES[frame % len(NEURON_FRAMES)]
-            bar = f"[yellow]{'#' * filled}[/][dim]{'.' * (bar_len - filled)}[/] {done}"
+            bar = f"[{DIM_GREEN}]{'=' * filled}[/][{DIM}]{'-' * (bar_len - filled)}[/]"
         else:
-            bar = f"[bold green]{'#' * bar_len}[/] {done}"
+            bar = f"[{PHOSPHOR}]{'=' * bar_len}[/]"
+        bar += f" {done}/{expected}"
 
-        # Rank medal
-        rank = rank_map.get(org_name, "-")
-        if rank == 1:
-            rank_str = "[bold bright_yellow]#1[/]"
-        elif rank == 2:
-            rank_str = "[bright_white]#2[/]"
-        elif rank == 3:
-            rank_str = "[yellow]#3[/]"
-        elif isinstance(rank, int):
-            rank_str = f"[dim]#{rank}[/]"
-        else:
-            rank_str = "[dim]-[/]"
+        bio_str = f"{statistics.mean(bio):.3f}" if bio else f"[{DIM}]-[/]"
+        ctrl_str = f"{statistics.mean(ctrl):.3f}" if ctrl else f"[{DIM}]-[/]"
+        delta_str = ""
+        if bio and ctrl:
+            d = (statistics.mean(bio) - statistics.mean(ctrl)) * 100
+            c = PHOSPHOR if d > 0 else WARN
+            delta_str = f"[{c}]{'+' if d > 0 else ''}{d:.1f}%[/]"
 
-        table.add_row(emoji, label, str(n_neurons), bar, best_acc, rank_str)
+        # Activity indicator
+        indicator = ""
+        if done > 0 and done < expected:
+            indicator = f"[{DIM_GREEN}]>[/]"
 
-    return Panel(table, title="[bold bright_white]ORGANISM LEADERBOARD[/]",
-                 border_style="green", box=box.ROUNDED)
+        table.add_row(label, str(n), f"{done}", bar, bio_str, ctrl_str, delta_str, indicator)
 
+    return Panel(table, title=f"[{GREEN}]ORGANISMS[/]", border_style=DIM_GREEN, box=box.HEAVY)
 
-def build_gpu_panel(frame):
-    gpu = get_gpu_info()
-    procs = get_gpu_processes()
-
-    if gpu is None:
-        return Panel("[dim]GPU info unavailable[/]", title="[bold]GPU[/]", border_style="red")
+def scope_panel(frame):
+    """Compact system scope readout replacing the old brain animation."""
+    signal = SIGNAL_FRAMES[frame % len(SIGNAL_FRAMES)]
+    scan = SCAN_FRAMES[frame % len(SCAN_FRAMES)]
+    cursor = CURSOR_FRAMES[frame % len(CURSOR_FRAMES)]
 
     t = Text()
-    util = gpu["util"]
-    bar_w = 28
-    filled = int(util / 100 * bar_w)
-    bar_c = "green" if util < 60 else "yellow" if util < 85 else "bold red"
-    t.append(f"  GPU:  [{bar_c}]{'#' * filled}[/][dim]{'.' * (bar_w - filled)}[/] {util}%\n")
+    t.append(f"  {signal} NEURAL TOPOLOGY SCAN\n", style=DIM_GREEN)
+    t.append(f"  {scan}\n", style=DIM_AMBER)
+    t.append(f"  10 organisms  |  6 tasks  |  5 topologies\n", style=DIM)
+    t.append(f"  3 seeds/exp   |  900 total experiments\n", style=DIM)
+    t.append(f"  BIO vs ER/BA/WS/DP controls{cursor}", style=DIM_GREEN)
 
-    mem_pct = gpu["mem_used"] / max(gpu["mem_total"], 1) * 100
-    filled = int(mem_pct / 100 * bar_w)
-    mc = "green" if mem_pct < 60 else "yellow" if mem_pct < 85 else "bold red"
-    t.append(f"  VRAM: [{mc}]{'#' * filled}[/][dim]{'.' * (bar_w - filled)}[/] {gpu['mem_used']}/{gpu['mem_total']}MB\n")
+    return Panel(t, title=f"[{DIM_AMBER}]SCOPE[/]", border_style=DIM_AMBER, box=box.ROUNDED)
 
-    tc = "green" if gpu["temp"] < 70 else "yellow" if gpu["temp"] < 85 else "bold red"
-    t.append(f"  Temp: [{tc}]{gpu['temp']}C[/]  Power: {gpu['power']:.0f}W  Procs: [cyan]{procs}[/]\n")
-    wave = GPU_FRAMES[frame % len(GPU_FRAMES)]
-    t.append(f"  [bold cyan]{wave}[/]")
+def stats_panel(results):
+    t = Text()
+    if not results:
+        t.append(f" [{DIM}]Awaiting data...[/]")
+        return Panel(t, title=f"[{COLD}]STATS[/]", border_style=COLD)
 
-    return Panel(t, title="[bold]>> RTX 5070 Ti <<[/]", border_style="bright_cyan", box=box.ROUNDED)
+    bio = [safe_float(r["accuracy"]) for r in results if r.get("type") == "biological"]
+    ctrl = [safe_float(r["accuracy"]) for r in results if r.get("type") != "biological"]
+    bio_loss = [safe_float(r["final_loss"]) for r in results if r.get("type") == "biological"]
+    ctrl_loss = [safe_float(r["final_loss"]) for r in results if r.get("type") != "biological"]
 
+    t.append(" ACCURACY\n", style=AMBER)
+    if bio:
+        t.append(f"  Bio:  n={len(bio):3d} u={statistics.mean(bio):.4f}")
+        if len(bio) > 1: t.append(f" s={statistics.stdev(bio):.4f}")
+        t.append("\n")
+    if ctrl:
+        t.append(f"  Ctrl: n={len(ctrl):3d} u={statistics.mean(ctrl):.4f}")
+        if len(ctrl) > 1: t.append(f" s={statistics.stdev(ctrl):.4f}")
+        t.append("\n")
+    if bio and ctrl:
+        diff = statistics.mean(bio) - statistics.mean(ctrl)
+        c = PHOSPHOR if diff > 0 else WARN
+        d = cohen_d(bio, ctrl)
+        t.append(f"  [{c}]D={'+' if diff>0 else ''}{diff*100:.3f}%  d={d:+.3f}[/]\n")
 
-def build_results_panel(results):
+    if bio_loss and ctrl_loss:
+        t.append(" LOSS CONVERGENCE\n", style=DIM_AMBER)
+        ld = cohen_d(ctrl_loss, bio_loss)
+        lm = statistics.mean(bio_loss) - statistics.mean(ctrl_loss)
+        lc = PHOSPHOR if lm < 0 else WARN
+        t.append(f"  Bio:{statistics.mean(bio_loss):.4f} Ctrl:{statistics.mean(ctrl_loss):.4f}")
+        t.append(f" [{lc}]d={ld:+.3f}{'  BIO BETTER' if ld > 0.2 else ''}[/]\n")
+
+    # Pairwise wins
+    wins, losses = 0, 0
+    for r in results:
+        if r.get("type") == "biological":
+            org, task, seed = r.get("organism", ""), r.get("task", ""), r.get("seed", "")
+            ba = safe_float(r["accuracy"])
+            for cr in results:
+                if cr.get("organism") == org and cr.get("task") == task and cr.get("seed") == seed and cr.get("type") != "biological":
+                    if ba > safe_float(cr["accuracy"]): wins += 1
+                    elif ba < safe_float(cr["accuracy"]): losses += 1
+    tp = wins + losses
+    if tp > 0:
+        t.append(" PAIRWISE\n", style=COLD)
+        wr = wins / tp * 100
+        wc = PHOSPHOR if wr > 55 else DIM_AMBER if wr > 45 else WARN
+        t.append(f"  Bio [{wc}]{wins}/{tp} ({wr:.1f}%)[/] Ctrl {losses}/{tp}\n")
+
+    # Effect gradient
+    efx = []
+    for org_name, n, _ in ORGANISMS:
+        ob = [safe_float(r["accuracy"]) for r in results if r.get("type") == "biological" and r.get("organism") == org_name]
+        oc = [safe_float(r["accuracy"]) for r in results if r.get("type") != "biological" and r.get("organism") == org_name]
+        if ob and oc:
+            d = cohen_d(ob, oc)
+            if abs(d) < 1e6: efx.append((n, d, org_name))
+    if len(efx) >= 2:
+        t.append(" EFFECT GRADIENT\n", style=DIM_GREEN)
+        for n, d, name in sorted(efx):
+            dc = PHOSPHOR if d > 0.2 else DIM_AMBER if d > -0.2 else WARN
+            short = name.replace("adult_", "~").replace("celegans_", "ce_")
+            bar_len = min(int(abs(d) * 5), 10)
+            bar_c = "|" * bar_len
+            t.append(f"  {n:>5}n [{dc}]{bar_c:<10} d={d:+.3f}[/] {short}\n")
+
+    # Controls
+    t.append(" CONTROLS\n", style="bright_white")
+    for cn in CONTROLS:
+        ca = [safe_float(r["accuracy"]) for r in results if r.get("type") == cn]
+        if ca and bio:
+            d = (statistics.mean(bio) - statistics.mean(ca)) * 100
+            dc = PHOSPHOR if d > 0 else WARN
+            t.append(f"  {cn:<16} [{dc}]{'+' if d>0 else ''}{d:.2f}%[/]\n")
+
+    times = [safe_float(r.get("train_time_sec")) for r in results if safe_float(r.get("train_time_sec")) > 0]
+    if times:
+        t.append(f" [{AMBER}]TIME[/] avg={statistics.mean(times):.0f}s  total={sum(times)/3600:.1f}h\n")
+
+    return Panel(t, title=f"[{COLD}]STATISTICS[/]", border_style=COLD, box=box.HEAVY)
+
+def hypothesis_panel(results, metrics, frame):
+    t = Text()
+    org_n = {name: n for name, n, _ in ORGANISMS}
+
+    # H1
+    bio_by_org = defaultdict(list)
+    for r in results:
+        if r.get("type") == "biological":
+            bio_by_org[r.get("organism", r["name"])].append(safe_float(r["accuracy"]))
+
+    t.append(" H1 Scaling: ", style=AMBER)
+    if len(bio_by_org) >= 2:
+        pts = sorted([(org_n.get(n, 0), statistics.mean(a)) for n, a in bio_by_org.items() if n in org_n])
+        if len(pts) >= 3:
+            r_val = pearson_r([math.log(n) for n, _ in pts], [a for _, a in pts])
+            rc = PHOSPHOR if r_val > 0.5 else DIM_AMBER if r_val > 0 else WARN
+            t.append(f"r(logN,acc)=[{rc}]{r_val:+.3f}[/]  {len(pts)} orgs")
+        else:
+            t.append(f"{len(pts)} orgs")
+    else:
+        t.append(f"[{DIM}]{len(bio_by_org)}/10[/]")
+    t.append("\n")
+
+    # H2
+    ba = [safe_float(r["accuracy"]) for r in results if r.get("type") == "biological"]
+    ca = [safe_float(r["accuracy"]) for r in results if r.get("type") != "biological"]
+    t.append(" H2 Bio>Rand: ", style=DIM_AMBER)
+    if ba and ca:
+        d = statistics.mean(ba) - statistics.mean(ca)
+        cd = cohen_d(ba, ca)
+        t.append(f"[{PHOSPHOR if d > 0 else WARN}]{'+' if d>0 else ''}{d*100:.2f}% d={cd:+.3f}[/]")
+    else:
+        t.append(f"[{DIM}]...[/]")
+    t.append("\n")
+
+    # Gradient
+    efx = []
+    for org_name, n, _ in ORGANISMS:
+        ob = [safe_float(r["accuracy"]) for r in results if r.get("type") == "biological" and r.get("organism") == org_name]
+        oc = [safe_float(r["accuracy"]) for r in results if r.get("type") != "biological" and r.get("organism") == org_name]
+        if ob and oc:
+            d = cohen_d(ob, oc)
+            if abs(d) < 1e6: efx.append((n, d))
+    t.append(" GRADIENT: ", style=COLD)
+    if len(efx) >= 3:
+        gr = pearson_r([math.log(n) for n, _ in sorted(efx)], [d for _, d in sorted(efx)])
+        gc = PHOSPHOR if gr > 0.5 else DIM_AMBER if gr > 0 else WARN
+        t.append(f"r(logN,d)=[{gc}]{gr:+.3f}[/]  ")
+        for n, d in sorted(efx):
+            if d > 0:
+                t.append(f"crossover~{n}n")
+                break
+    else:
+        t.append(f"[{DIM}]{len(efx)} orgs[/]")
+    t.append("\n")
+
+    # Loss
+    bl = [safe_float(r["final_loss"]) for r in results if r.get("type") == "biological"]
+    cl = [safe_float(r["final_loss"]) for r in results if r.get("type") != "biological"]
+    t.append(" LOSS: ", style=DIM_GREEN)
+    if bl and cl:
+        ld = cohen_d(cl, bl)
+        t.append(f"[{PHOSPHOR if ld > 0.2 else DIM_AMBER if ld > 0 else WARN}]d={ld:+.3f} {'BIO BETTER' if ld > 0.2 else ''}[/]\n")
+    else:
+        t.append(f"[{DIM}]...[/]\n")
+
+    # H3-H5
+    t.append(f" H3:{len(metrics)}/10  ", style="bright_white")
+    sc = len(set(r.get("organism") for r in results if "adult_" in r.get("name", "")))
+    t.append(f"H4:{sc}/6  H5:")
+    herm = [safe_float(r["accuracy"]) for r in results if r.get("name") == "celegans_herm" and r.get("type") == "biological"]
+    male = [safe_float(r["accuracy"]) for r in results if r.get("name") == "celegans_male" and r.get("type") == "biological"]
+    if herm and male:
+        d = (statistics.mean(male) - statistics.mean(herm)) * 100
+        t.append(f"[{PHOSPHOR if d > 0 else DIM_AMBER}]{'+' if d>0 else ''}{d:.1f}%[/]")
+    else:
+        t.append(f"[{DIM}]--[/]")
+
+    return Panel(t, title=f"[{DIM_AMBER}]HYPOTHESES[/]", border_style=DIM_AMBER, box=box.DOUBLE)
+
+def task_panel(results, frame):
     table = Table(box=box.SIMPLE, expand=True, show_header=True,
-                  header_style="bold", padding=(0, 1))
-    table.add_column("Network", width=20, style="cyan")
-    table.add_column("Task", width=10)
-    table.add_column("Type", width=14)
-    table.add_column("Acc", justify="right", width=8)
-    table.add_column("XP", justify="right", width=5)
+                  header_style="bold bright_white", padding=(0, 1))
+    table.add_column("Task", width=14, style=DIM_GREEN)
+    table.add_column("Progress", width=22)
+    table.add_column("Done", justify="right", width=7)
+    table.add_column("Mean", justify="right", width=7)
+    table.add_column("Best", justify="right", width=7)
+    table.add_column("Avg t", justify="right", width=6)
 
-    for r in results[-10:]:
-        try:
-            acc = float(r["accuracy"])
-        except (ValueError, KeyError):
-            acc = 0
-        acc_s = "bold green" if acc > 0.95 else "yellow" if acc > 0.85 else "red"
-        type_s = "bold bright_white" if r.get("type") == "biological" else "dim"
-        short = r.get("name", "?").replace("adult_", "~").replace("celegans_", "ce_")
-        xp_earned = XP_PER_EXPERIMENT + (XP_PER_HIGH_ACC if acc > 0.95 else 0)
+    by_task = defaultdict(list)
+    for r in results: by_task[r.get("task", "")].append(r)
+
+    for i, task in enumerate(TASKS):
+        rows = by_task.get(task, [])
+        done = len(rows)
+        total = EXPS_PER_TASK
+        pct = done / max(total, 1)
+        bar_len = 14
+        filled = int(pct * bar_len)
+
+        if done == 0:
+            bar = f"[{DIM}]{'.' * bar_len}[/]"
+        elif done < total:
+            bar = f"[{DIM_GREEN}]{'=' * filled}[/][{DIM}]{'-' * (bar_len - filled)}[/]"
+        else:
+            bar = f"[{PHOSPHOR}]{'=' * bar_len}[/]"
+
+        accs = [safe_float(r.get("accuracy")) for r in rows]
+        times = [safe_float(r.get("train_time_sec")) for r in rows if safe_float(r.get("train_time_sec")) > 0]
+
         table.add_row(
-            short, r.get("task", "?"),
-            Text(r.get("type", "?"), style=type_s),
-            Text(f"{acc:.4f}", style=acc_s),
-            f"[bright_yellow]+{xp_earned}[/]"
+            task, bar, f"{done}/{total}",
+            f"{statistics.mean(accs):.3f}" if accs else "-",
+            f"[{PHOSPHOR}]{max(accs):.3f}[/]" if accs else "-",
+            f"{statistics.mean(times):.0f}s" if times else "-",
         )
 
-    return Panel(table, title=f"[bold]RESULTS LOG ({len(results)} total)[/]",
-                 border_style="bright_yellow", box=box.ROUNDED)
+    return Panel(table, title=f"[{AMBER}]TASKS[/]", border_style=DIM_AMBER, box=box.DOUBLE)
 
-
-def build_achievements_panel(unlocked, frame):
-    t = Text()
-    t.append("  ACHIEVEMENTS UNLOCKED\n\n", style="bold bright_yellow")
-
-    for key, (name, desc, _) in ACHIEVEMENTS.items():
-        if key in unlocked:
-            sparkle = "*" if frame % 2 == 0 else "+"
-            t.append(f"  [{sparkle}] ", style="bold bright_yellow")
-            t.append(f"{name}", style="bold green")
-            t.append(f" - {desc}\n", style="dim")
-        else:
-            t.append(f"  [ ] ", style="dim")
-            t.append(f"{name}", style="dim")
-            t.append(f" - {desc}\n", style="dim")
-
-    progress = len(unlocked)
-    total = len(ACHIEVEMENTS)
-    t.append(f"\n  {progress}/{total} unlocked", style="bold bright_yellow")
-
-    return Panel(t, title=f"[bold bright_yellow]TROPHIES {progress}/{total}[/]",
-                 border_style="bright_yellow", box=box.ROUNDED)
-
-
-def build_battle_panel(results, frame):
-    """Bio vs Random — head-to-head battle tracker per organism."""
-    t = Text()
-    battle = BATTLE_FRAMES[frame % len(BATTLE_FRAMES)]
-    t.append(f"  {battle}\n\n", style="bold bright_cyan")
-
-    bio_wins_total = 0
-    ctrl_wins_total = 0
-
-    for org_name, _, emoji, label in ORGANISMS:
-        bio_accs = [float(r["accuracy"]) for r in results
-                    if r.get("name") == org_name and r.get("type") == "biological"]
-        if not bio_accs:
-            continue
-
-        bio_mean = sum(bio_accs) / len(bio_accs)
-        ctrl_all = []
-        for ctrl in CONTROLS:
-            ca = [float(r["accuracy"]) for r in results
-                  if r.get("name") == f"{org_name}_{ctrl}"]
-            ctrl_all.extend(ca)
-
-        if not ctrl_all:
-            t.append(f"  {emoji} {label:<12} bio={bio_mean:.4f} vs [dim]...[/]\n")
-            continue
-
-        ctrl_mean = sum(ctrl_all) / len(ctrl_all)
-        diff = (bio_mean - ctrl_mean) * 100
-        if diff > 0:
-            bio_wins_total += 1
-            color = "bold green"
-            arrow = ">>"
-        else:
-            ctrl_wins_total += 1
-            color = "bold red"
-            arrow = "<<"
-
-        bar_len = min(abs(int(diff * 10)), 10)
-        bar = "#" * bar_len
-        sign = "+" if diff > 0 else ""
-        t.append(f"  {emoji} {label:<12} [{color}]{arrow} {sign}{diff:.2f}% {bar}[/]\n")
-
-    if bio_wins_total + ctrl_wins_total > 0:
-        t.append(f"\n  Score: [bold green]BIO {bio_wins_total}[/] - [bold red]{ctrl_wins_total} RANDOM[/]")
-    else:
-        t.append("  [dim]Waiting for matchups...[/]")
-
-    return Panel(t, title="[bold]BATTLE: Bio vs Random[/]", border_style="bright_red", box=box.ROUNDED)
-
-
-def build_scaling_panel(results, frame):
-    bio_mnist = {}
-    for r in results:
-        if r.get("type") == "biological" and r.get("task") == "MNIST":
-            name = r["name"]
-            acc = float(r["accuracy"])
-            if name not in bio_mnist or acc > bio_mnist[name]:
-                bio_mnist[name] = acc
-
-    if not bio_mnist:
-        return Panel("[dim]Waiting for biological results...[/]",
-                     title="[bold]H1: SCALING LAW[/]", border_style="magenta")
-
-    org_neurons = {name: n for name, n, _, _ in ORGANISMS}
-    t = Text()
-    t.append("  Accuracy vs log(Neurons) -- MNIST\n\n", style="bold")
-
-    chart_h, chart_w = 6, 35
-    sorted_orgs = sorted(bio_mnist.items(), key=lambda x: org_neurons.get(x[0], 0))
-
-    min_acc = min(bio_mnist.values()) - 0.01
-    max_acc = max(bio_mnist.values()) + 0.01
-    acc_range = max(max_acc - min_acc, 0.001)
-
-    for row in range(chart_h, -1, -1):
-        acc_val = min_acc + (row / chart_h) * acc_range
-        line = f"  {acc_val:.3f} |"
-        for i, (name, acc) in enumerate(sorted_orgs):
-            col = int((i / max(len(sorted_orgs) - 1, 1)) * (chart_w - 2)) + 1
-            row_pos = int((acc - min_acc) / acc_range * chart_h)
-            if row_pos == row:
-                sym = "O" if frame % 2 == 0 else "o"
-                pad = col - (len(line) - 11)
-                if pad > 0:
-                    line += " " * pad + f"[bold green]{sym}[/]"
-        t.append(line + "\n")
-
-    t.append("         +" + "-" * chart_w + "\n")
-    t.append("          ")
-    for name, _ in sorted_orgs:
-        t.append(f" {name[:4]}  ", style="dim")
-
-    return Panel(t, title="[bold]H1: SCALING LAW[/]", border_style="magenta", box=box.ROUNDED)
-
-
-def build_metrics_panel(metrics):
-    if not metrics:
-        return Panel("[dim]Computing graph metrics...[/]",
-                     title="[bold]GRAPH METRICS[/]", border_style="blue")
-
+def results_panel(results, frame):
     table = Table(box=box.SIMPLE, expand=True, show_header=True,
-                  header_style="bold", padding=(0, 1))
-    table.add_column("Network", width=18, style="cyan")
-    table.add_column("N", justify="right", width=5)
-    table.add_column("Clust", justify="right", width=6)
-    table.add_column("SW", justify="right", width=6)
-    table.add_column("Mod", justify="right", width=6)
-    table.add_column("Recip", justify="right", width=6)
+                  header_style="bold bright_white", padding=(0, 1))
+    for col, w in [("Network", 20), ("Task", 9), ("Type", 12), ("Acc", 7), ("Loss", 9), ("t", 5)]:
+        table.add_column(col, width=w, justify="left" if col in ("Network","Task","Type") else "right")
 
-    for m in metrics:
-        name = m.get("name", "?").replace("adult_", "~").replace("celegans_", "ce_")
-        nodes = m.get("n_neurons", "?")
-        clust = float(m.get("clustering_coeff", 0))
-        sw = m.get("small_world_sigma", "0")
-        modul = float(m.get("modularity", 0))
-        recip = float(m.get("reciprocity", 0))
+    for r in results[-10:]:
+        acc = safe_float(r.get("accuracy"))
+        ac = PHOSPHOR if acc > 0.95 else DIM_AMBER if acc > 0.85 else WARN
+        ts = GREEN if r.get("type") == "biological" else DIM
+        name = r.get("name", "?").replace("adult_", "~").replace("celegans_", "ce_")
+        table.add_row(
+            name, r.get("task", "?"), Text(r.get("type", "?"), style=ts),
+            Text(f"{acc:.4f}", style=ac),
+            f"{safe_float(r.get('final_loss')):.5f}",
+            f"{safe_float(r.get('train_time_sec')):.0f}s",
+        )
 
-        try:
-            sw_f = float(sw)
-            sw_str = f"{sw_f:.1f}"
-            sw_style = "bold green" if sw_f > 5 else "white"
-        except ValueError:
-            sw_str = "?"
-            sw_style = "dim"
+    return Panel(table, title=f"[bright_white]LOG ({len(results)})[/]", border_style=DIM, box=box.ROUNDED)
 
-        table.add_row(name, str(nodes), f"{clust:.3f}",
-                      Text(sw_str, style=sw_style), f"{modul:.3f}", f"{recip:.3f}")
-
-    return Panel(table, title=f"[bold]GRAPH METRICS ({len(metrics)}/10)[/]",
-                 border_style="blue", box=box.ROUNDED)
-
-
-def build_pipeline_panel(results, metrics, frame):
+def active_panel(results, frame):
     t = Text()
-    task_counts = defaultdict(int)
-    for r in results:
-        task_counts[r.get("task", "")] += 1
+    cursor = CURSOR_FRAMES[frame % len(CURSOR_FRAMES)]
+    if not results:
+        t.append(f" [{DIM_GREEN}]>>{cursor}[/] Awaiting first result...")
+        return Panel(t, title=f"[{DIM_AMBER}]ACTIVE[/]", border_style=DIM_AMBER)
 
-    total_per_task = len(ORGANISMS) * (1 + len(CONTROLS)) * len(SEEDS)
+    last = results[-1]
+    try: elapsed = time.time() - os.path.getmtime(RESULTS_CSV)
+    except OSError: elapsed = 0
 
-    for task in TASKS:
-        done = task_counts.get(task, 0)
-        pct = done / total_per_task
-        bar_len = 20
-        filled = int(pct * bar_len)
+    times = [safe_float(r.get("train_time_sec")) for r in results if safe_float(r.get("train_time_sec")) > 0]
+    avg = statistics.mean(times) if times else 300
+    exp_pct = min(elapsed / max(avg, 1) * 100, 99)
+    bar_w = 25
+    filled = int(exp_pct / 100 * bar_w)
 
-        if done == 0:
-            sym, color = "[.]", "dim"
-        elif done < total_per_task:
-            sym = ["[*]", "[+]", "[>]", "[#]"][frame % 4]
-            color = "yellow"
-        else:
-            sym, color = "[v]", "green"
+    t.append(f" [{DIM_GREEN}]>>{cursor}[/] ")
+    t.append(f"{last.get('organism', '?')}/{last.get('task', '?')} ")
+    t.append(f"[{DIM_GREEN}]{'=' * filled}[/][{DIM}]{'-' * (bar_w - filled)}[/] {exp_pct:.0f}%")
+    t.append(f"  {int(elapsed)}s/~{avg:.0f}s")
 
-        bar = f"[{color}]{'#' * filled}[/][dim]{'.' * (bar_len - filled)}[/]"
-        t.append(f"  {sym} {task:<16} {bar} {done}/{total_per_task}\n")
-
-    overall_pct = len(results) / max(TOTAL_EXPERIMENTS, 1) * 100
-    t.append(f"\n  Metrics: [cyan]{len(metrics)}/10[/]  ")
-    t.append(f"Total: [bold]{len(results)}/{TOTAL_EXPERIMENTS}[/]  ")
-    t.append(f"[bold bright_yellow]{overall_pct:.1f}%[/]")
-
-    return Panel(t, title="[bold]PIPELINE PROGRESS[/]",
-                 border_style="bright_white", box=box.DOUBLE)
+    return Panel(t, title=f"[{DIM_AMBER}]ACTIVE[/]", border_style=DIM_AMBER, box=box.ROUNDED)
 
 
-def build_activity_log(results, frame):
-    lines = []
-
-    if results:
-        last = results[-1]
-        try:
-            acc = float(last.get("accuracy", 0))
-        except (ValueError, TypeError):
-            acc = 0
-        lines.append(f"  [green]OK[/] {last.get('name','?')} / {last.get('task','?')} -> {acc:.4f}")
-
-    msgs = [
-        "Training BPU on connectome...", "Forward pass through synapses...",
-        "Backprop through projections...", "Evaluating test accuracy...",
-        "Saving results to CSV...", "Loading adjacency matrix...",
-        "Generating control network...", "Computing graph metrics...",
-    ]
-    spinner = ["|", "/", "-", "\\"][frame % 4]
-    lines.append(f"  [yellow]{spinner}[/] {msgs[frame % len(msgs)]}")
-
-    elapsed = timedelta(seconds=int(time.time()) % 86400)
-    lines.append(f"  [dim]Uptime: {elapsed}[/]")
-
-    return Panel("\n".join(lines), title="[bold]ACTIVITY[/]",
-                 border_style="bright_blue", box=box.ROUNDED)
-
-
-# -- Layout -----------------------------------------------------------------
 def make_layout():
     layout = Layout(name="root")
     layout.split_column(
-        Layout(name="header", size=6),
+        Layout(name="header", size=4),
         Layout(name="body"),
         Layout(name="footer", size=12),
     )
@@ -661,22 +511,18 @@ def make_layout():
         Layout(name="right", ratio=2),
     )
     layout["left"].split_column(
-        Layout(name="organisms", ratio=3),
-        Layout(name="results", ratio=2),
+        Layout(name="organisms"),
+        Layout(name="active", size=3),
     )
     layout["right"].split_column(
-        Layout(name="gpu", size=7),
-        Layout(name="battle", ratio=2),
-        Layout(name="scaling", ratio=2),
+        Layout(name="gpu", size=5),
+        Layout(name="scope", size=8),
+        Layout(name="stats"),
     )
     layout["footer"].split_row(
-        Layout(name="pipeline", ratio=2),
-        Layout(name="achievements", ratio=2),
-        Layout(name="metrics_activity", ratio=2),
-    )
-    layout["metrics_activity"].split_column(
-        Layout(name="metrics", ratio=2),
-        Layout(name="activity", size=5),
+        Layout(name="tasks", ratio=2),
+        Layout(name="hypotheses", ratio=2),
+        Layout(name="results_log", ratio=2),
     )
     return layout
 
@@ -685,46 +531,32 @@ def main():
     console = Console()
     layout = make_layout()
     frame = 0
-    prev_count = 0
-
-    console.print("\n[bold bright_cyan]  BPU Connectome Dashboard starting...[/]\n")
-    console.print("  [dim]Press Ctrl+C to exit[/]\n")
 
     with Live(layout, console=console, refresh_per_second=2, screen=True) as live:
         while True:
             try:
-                results = load_results()
-                metrics = load_metrics()
-                gpu_info = get_gpu_info()
+                results = load_csv(RESULTS_CSV)
+                metrics = load_csv(METRICS_CSV)
 
-                # Gamification
-                xp = compute_xp(results, metrics)
-                level_num, level_name, level_style, next_xp = get_level(xp)
-                unlocked = check_achievements(results, metrics, gpu_info)
+                layout["header"].update(header_panel(results, frame))
+                layout["organisms"].update(organism_panel(results, frame))
+                layout["active"].update(active_panel(results, frame))
+                layout["gpu"].update(gpu_panel(frame))
+                layout["scope"].update(scope_panel(frame))
+                layout["stats"].update(stats_panel(results))
+                layout["hypotheses"].update(hypothesis_panel(results, metrics, frame))
+                layout["tasks"].update(task_panel(results, frame))
+                layout["results_log"].update(results_panel(results, frame))
 
-                layout["header"].update(build_header(frame, xp, level_num, level_name, level_style, next_xp))
-                layout["organisms"].update(build_organism_panel(results, frame))
-                layout["results"].update(build_results_panel(results))
-                layout["gpu"].update(build_gpu_panel(frame))
-                layout["battle"].update(build_battle_panel(results, frame))
-                layout["scaling"].update(build_scaling_panel(results, frame))
-                layout["pipeline"].update(build_pipeline_panel(results, metrics, frame))
-                layout["achievements"].update(build_achievements_panel(unlocked, frame))
-                layout["metrics"].update(build_metrics_panel(metrics))
-                layout["activity"].update(build_activity_log(results, frame))
-
-                prev_count = len(results)
                 frame += 1
                 time.sleep(0.5)
-
             except KeyboardInterrupt:
                 break
             except Exception as e:
-                console.print(f"[red]Error: {e}[/]")
+                console.print(f"[{WARN}]{e}[/]")
                 time.sleep(1)
 
-    console.print("\n[bold green]  Dashboard stopped. Experiments continue in background.[/]\n")
-
+    console.print(f"\n[{PHOSPHOR}]Terminal closed. Experiments continue in background.[/]\n")
 
 if __name__ == "__main__":
     main()
