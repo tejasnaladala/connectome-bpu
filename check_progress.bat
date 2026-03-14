@@ -1,0 +1,3 @@
+@echo off
+cd /d "C:\Users\tejas\OneDrive\Desktop\connectome_bpu"
+python3.11 -u -c "import pandas as pd; df = pd.read_csv('results/all_results.csv'); print(f'TOTAL: {len(df)}/900'); print(f'Unique organisms: {df[\"organism\"].nunique()}'); print(f'Unique tasks: {df[\"task\"].nunique()}'); print(f'Unique types: {df[\"type\"].nunique()}'); print(); print('=== BY TYPE ==='); print(df['type'].value_counts().to_string()); print(); print('=== BY ORGANISM ==='); print(df.groupby('organism').size().sort_values(ascending=False).to_string()); print(); print('=== BY TASK ==='); print(df.groupby('task').size().sort_values(ascending=False).to_string())"

@@ -1,0 +1,844 @@
+{
+  "metadata": {
+    "scan_time": "2026-03-13T23:26:33.796211",
+    "sources": [
+      "arxiv",
+      "biorxiv",
+      "semantic_scholar",
+      "crossref"
+    ],
+    "total_fetched": 21,
+    "after_dedup": 21,
+    "categories_scanned": [
+      "cs.NE",
+      "cs.LG",
+      "cs.AI",
+      "cs.CV",
+      "q-bio.NC",
+      "q-bio.QM",
+      "physics.comp-ph",
+      "cond-mat",
+      "astro-ph",
+      "stat.ML",
+      "math.OC",
+      "eess.SP"
+    ],
+    "keyword_count": 17
+  },
+  "papers": [
+    {
+      "id": "93617356f3dbcd3e",
+      "title": "Reservoir Computing for Macroeconomic Forecasting with Mixed Frequency Data",
+      "authors": [
+        "Giovanni Ballarin",
+        "Petros Dellaportas",
+        "Lyudmila Grigoryeva",
+        "Marcel Hirt",
+        "Sophie van Huellen",
+        "Juan-Pablo Ortega"
+      ],
+      "abstract": "Macroeconomic forecasting has recently started embracing techniques that can deal with large-scale datasets and series with unequal release periods. MIxed-DAta Sampling (MIDAS) and Dynamic Factor Models (DFM) are the two main state-of-the-art approaches that allow modeling series with non-homogeneous frequencies. We introduce a new framework called the Multi-Frequency Echo State Network (MFESN) based on a relatively novel machine learning paradigm called reservoir computing. Echo State Networks (ESN) are recurrent neural networks formulated as nonlinear state-space systems with random state coefficients where only the observation map is subject to estimation. MFESNs are considerably more efficient than DFMs and allow for incorporating many series, as opposed to MIDAS models, which are prone to the curse of dimensionality. All methods are compared in extensive multistep forecasting exercises targeting US GDP growth. We find that our MFESN models achieve superior or comparable performance over MIDAS and DFMs at a much lower computational cost.",
+      "url": "http://arxiv.org/abs/2211.00363v3",
+      "source": "arxiv",
+      "published": "2022-11-01",
+      "categories": [
+        "econ.EM"
+      ],
+      "doi": "",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:25:47.681598",
+      "scores": {
+        "capitalize": 5,
+        "novelty": 5,
+        "feasibility": 5,
+        "connection": 6,
+        "overall": 5.2
+      },
+      "gaps_detected": [],
+      "relevance_hits": [
+        "reservoir computing",
+        "echo state"
+      ],
+      "analysis_timestamp": "2026-03-13T23:26:33.778698"
+    },
+    {
+      "id": "87e8ad3351a493b3",
+      "title": "Data-driven and machine-learning based prediction of wave propagation behavior in dam-break flood",
+      "authors": [
+        "Changli Li",
+        "Zheng Han",
+        "Yange Li",
+        "Ming Li",
+        "Weidong Wang"
+      ],
+      "abstract": "The computational prediction of wave propagation in dam-break floods is a long-standing problem in hydrodynamics and hydrology. Until now, conventional numerical models based on Saint-Venant equations are the dominant approaches. Here we show that a machine learning model that is well-trained on a minimal amount of data, can help predict the long-term dynamic behavior of a one-dimensional dam-break flood with satisfactory accuracy. For this purpose, we solve the Saint-Venant equations for a one-dimensional dam-break flood scenario using the Lax-Wendroff numerical scheme and train the reservoir computing echo state network (RC-ESN) with the dataset by the simulation results consisting of time-sequence flow depths. We demonstrate a good prediction ability of the RC-ESN model, which ahead predicts wave propagation behavior 286 time-steps in the dam-break flood with a root mean square error (RMSE) smaller than 0.01, outperforming the conventional long short-term memory (LSTM) model which reaches a comparable RMSE of only 81 time-steps ahead. To show the performance of the RC-ESN model, we also provide a sensitivity analysis of the prediction accuracy concerning the key parameters including training set size, reservoir size, and spectral radius. Results indicate that the RC-ESN are less dependent on the training set size, a medium reservoir size K=1200~2600 is sufficient. We confirm that the spectral radius \\r{ho} shows a complex influence on the prediction accuracy and suggest a smaller spectral radius \\r{ho} currently. By changing the initial flow depth of the dam break, we also obtained the conclusion that the prediction horizon of RC-ESN is larger than that of LSTM.",
+      "url": "http://arxiv.org/abs/2209.08729v1",
+      "source": "arxiv",
+      "published": "2022-09-19",
+      "categories": [
+        "physics.flu-dyn",
+        "stat.ML"
+      ],
+      "doi": "",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:25:47.681598",
+      "scores": {
+        "capitalize": 5,
+        "novelty": 4,
+        "feasibility": 5,
+        "connection": 7,
+        "overall": 5.2
+      },
+      "gaps_detected": [],
+      "relevance_hits": [
+        "reservoir computing",
+        "echo state"
+      ],
+      "analysis_timestamp": "2026-03-13T23:26:33.778698"
+    },
+    {
+      "id": "04f58dc7c187f9c0",
+      "title": "Brain-Inspired Hardware for Artificial Intelligence: Accelerated Learning in a Physical-Model Spiking Neural Network",
+      "authors": [
+        "Timo C. Wunderlich",
+        "Akos F. Kungl",
+        "Eric Müller",
+        "Johannes Schemmel",
+        "Mihai Petrovici"
+      ],
+      "abstract": "Future developments in artificial intelligence will profit from the existence of novel, non-traditional substrates for brain-inspired computing. Neuromorphic computers aim to provide such a substrate that reproduces the brain's capabilities in terms of adaptive, low-power information processing. We present results from a prototype chip of the BrainScaleS-2 mixed-signal neuromorphic system that adopts a physical-model approach with a 1000-fold acceleration of spiking neural network dynamics relative to biological real time. Using the embedded plasticity processor, we both simulate the Pong arcade video game and implement a local plasticity rule that enables reinforcement learning, allowing the on-chip neural network to learn to play the game. The experiment demonstrates key aspects of the employed approach, such as accelerated and flexible learning, high energy efficiency and resilience to noise.",
+      "url": "http://arxiv.org/abs/1909.11145v2",
+      "source": "arxiv",
+      "published": "2019-09-24",
+      "categories": [
+        "cs.NE",
+        "cs.AI",
+        "cs.ET"
+      ],
+      "doi": "",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:25:51.331289",
+      "scores": {
+        "capitalize": 5,
+        "novelty": 5,
+        "feasibility": 5,
+        "connection": 6,
+        "overall": 5.2
+      },
+      "gaps_detected": [],
+      "relevance_hits": [
+        "neuromorphic",
+        "brain-inspired"
+      ],
+      "analysis_timestamp": "2026-03-13T23:26:33.778698"
+    },
+    {
+      "id": "514a73b0b528ebad",
+      "title": "Feedback control of recurrent circuits imposes dynamical constraints on learning",
+      "authors": [
+        "Gurnani, H.",
+        "Liu, W.",
+        "Brunton, B. W."
+      ],
+      "abstract": "Neural activity has been observed to lie on low-dimensional manifolds, constraining what behaviors are easier or harder to learn. We propose that beyond this geometric constraint, learning on fast timescales is limited by how neural activity can flow over time within these manifolds -- i.e., by the system's underlying dynamics. In primary motor cortex (M1), these neural dynamics are shaped not only by internal recurrence but also by sensory feedback inputs that can continually update cortical activity. Modeling recurrent neural networks with adaptive feedback controllers in a brain-computer interface (BCI) task, we show that feedback-driven dynamics determine not just the robustness but also the flexibility of motor output. Through a control-theoretic approach, we quantitatively link learning speed and success for individual BCI decoders to the structure of input-driven dynamics. We show that rapid learning is fundamentally limited by the network controllability - the ease with which inputs can steer neural activity along desired directions. Crucially, this dynamical systems perspective explains a continuous form of experimentally-observed learning variability that has previously not been addressed. We also make a testable prediction that rapid adaptation to new BCI decoders depends on upstream input plasticity, such as remapping of sensory feedback, beyond local plasticity within M1. Overall, our work identifies potential network mechanisms for fast but limited motor learning, and clarifies how constraints on learning arise from both the geometry of neural activity and its underlying dynamical structure.",
+      "url": "https://doi.org/10.1101/2024.05.24.595772",
+      "source": "biorxiv",
+      "published": "2026-03-11",
+      "categories": [
+        "neuroscience"
+      ],
+      "doi": "10.1101/2024.05.24.595772",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:21.278033",
+      "scores": {
+        "capitalize": 6,
+        "novelty": 8,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 5.2
+      },
+      "gaps_detected": [
+        "limited by",
+        "limited by",
+        "not been addressed"
+      ],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.784261"
+    },
+    {
+      "id": "a5924bdecc0f7847",
+      "title": "A Graph Neural Network Approach for High-Fidelity Thermospheric State Estimation",
+      "authors": [
+        "Eliot Dable",
+        "Anasuya Aruliah",
+        "Santosh Bhattarai"
+      ],
+      "abstract": "Accurate satellite orbit prediction in low-Earth orbit (LEO) has become increasingly important as satellite congestion grows in this region of the atmosphere, increasing the risk of collisions with other spacecraft and space debris. Atmospheric drag is the dominant source of uncertainty at LEO altitudes, with it being the largest non-conservative force in this region. This makes accurate estimation of thermospheric parameters essential for reliable orbit propagation, as the LEO drag force is a function of neutral thermospheric parameters.Orbit prediction relies on estimating thermospheric properties such as density, temperature, and winds, where currently empirical or numerical models are used to generate these values. Although widely used in space operations, these models struggle to capture the thermosphere’s dynamic behaviour, which leads to significant errors in drag estimation and orbital predictions. A major event occurred in February 2022, when SpaceX launched 49 Starlink satellites during a minor geomagnetic storm. This unexpectedly increased satellite drag, causing 38 satellites to deorbit, where they were ultimately lost as a result of atmospheric reentry. This loss for SpaceX shed light on the need for more accurate thermospheric models, as satellite operators rely heavily on these models for orbit planning.As collision risk increases, satellite operators require higher-fidelity modelling approaches. While machine learning methods have shown promise in improving thermospheric state prediction, they are not yet widely adopted. Graph Neural Networks (GNNs) have demonstrated strong performance in spatiotemporal modelling of complex geophysical systems. Notably, Google DeepMind’s GraphCast model demonstrated predictive skill comparable to that of the ECMWF operational forecasting system, setting a new benchmark for medium-range tropospheric weather prediction.This research develops a GNN-based framework to model the spatiotemporal dynamics of the thermosphere, enabling improved estimation of neutral atmospheric parameters and supporting more accurate orbit prediction in the near-Earth environment.",
+      "url": "https://doi.org/10.5194/egusphere-egu26-5649",
+      "source": "crossref",
+      "published": "",
+      "categories": [],
+      "doi": "10.5194/egusphere-egu26-5649",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:28.320590",
+      "scores": {
+        "capitalize": 6,
+        "novelty": 4,
+        "feasibility": 5,
+        "connection": 4,
+        "overall": 4.8
+      },
+      "gaps_detected": [],
+      "relevance_hits": [
+        "graph neural",
+        "benchmark"
+      ],
+      "analysis_timestamp": "2026-03-13T23:26:33.788273"
+    },
+    {
+      "id": "87e4149110a9a3f8",
+      "title": "Cell-type specific population codes link inferior temporal cortex to object recognition behavior",
+      "authors": [
+        "Muzellec, S.",
+        "Sanghavi, S.",
+        "Kar, K."
+      ],
+      "abstract": "A spatially distributed population of neurons in the macaque inferior temporal (IT) cortex supports object recognition behavior, but the cell-type specificity of the population in forming \"behaviorally sufficient\" object decodes remains poorly understood. To address this, we recorded neural signals from the macaque IT cortex and compared the object identity information and the alignment of decoding strategies derived from putative inhibitory (Inh) and excitatory (Exc) neurons to the monkeys behavior. We observed that while Inh neurons represented significant category information, decoding strategies based on Exc neural population activity outperformed those from Inh neurons in overall accuracy and their image-level match to the monkeys behavioral reports. Interestingly, both Exc and Inh responses explained a fraction of unique variance of the monkeys behavior, demonstrating a distinct role of the two cell types in generating object identity solutions for a downstream readout. We observed that current artificial neural network (ANN) models of primate ventral stream, designed with AI goals of performance optimization on image categorization, better predict Exc neurons (and their contribution to object recognition behavior) than Inh neurons. Beyond, refining the linking propositions between IT neurons and object recognition behavior, our results guide the development of next-generation biologically constrained brain models by offering novel cell-type specific neural benchmarks.",
+      "url": "https://doi.org/10.1101/2023.08.01.551579",
+      "source": "biorxiv",
+      "published": "2026-03-11",
+      "categories": [
+        "neuroscience"
+      ],
+      "doi": "10.1101/2023.08.01.551579",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:21.278033",
+      "scores": {
+        "capitalize": 5,
+        "novelty": 5,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 4.2
+      },
+      "gaps_detected": [],
+      "relevance_hits": [
+        "benchmark"
+      ],
+      "analysis_timestamp": "2026-03-13T23:26:33.780703"
+    },
+    {
+      "id": "6fa12556879fb3b4",
+      "title": "A Composite-Loss Graph Neural Network for the Multivariate Post-Processing of Ensemble Weather Forecasts",
+      "authors": [
+        "Mária Lakatos"
+      ],
+      "abstract": "A widely recognized limitation of most post-processing methods is that they are typically applied independently for each forecast horizon, location, and variable, potentially neglecting important dependencies across these dimensions. Despite the development of numerous statistical and machine learning methods for modeling these dependencies, the topic remains the subject of ongoing research. In this work, the proposed approach employs a graph neural network (GNN) trained with a composite loss function that combines the energy score (ES) and the variogram score (VS) for the multivariate postprocessing of ensemble forecasts. The method is evaluated using WRF-based solar irradiance forecasts over northern Chile and ECMWF visibility forecasts over Central Europe. Across all multivariate verification metrics, the dual-loss GNN consistently outperforms empirical copula–based postprocessing methods as well as GNNs trained solely with CRPS or ES. For the WRF forecasts, the learned rank-order structure captures dependency information more effectively, leading to improved restoration of spatial relationships compared with both the raw ensemble and historical observational ranks. Moreover, incorporating VS into the training loss also improves univariate predictive performance for both forecast targets.Lakatos, M. (in press). A composite-loss graph neural network for the multivariate post-processing of ensemble weather forecasts.Quarterly Journal of the Royal Meteorological Society.",
+      "url": "https://doi.org/10.5194/egusphere-egu26-5377",
+      "source": "crossref",
+      "published": "",
+      "categories": [],
+      "doi": "10.5194/egusphere-egu26-5377",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:28.320590",
+      "scores": {
+        "capitalize": 4,
+        "novelty": 4,
+        "feasibility": 5,
+        "connection": 4,
+        "overall": 4.2
+      },
+      "gaps_detected": [],
+      "relevance_hits": [
+        "graph neural"
+      ],
+      "analysis_timestamp": "2026-03-13T23:26:33.788273"
+    },
+    {
+      "id": "69dd5abec988a1b5",
+      "title": "ROPE: a novel method for real-time phase estimation of complex biological rhythms",
+      "authors": [
+        "Antonio Spallone",
+        "Marco Coraggio",
+        "Francesco De Lellis",
+        "Mario di Bernardo"
+      ],
+      "abstract": "Abstract\n                  Accurate phase estimation—the process of assigning phase values between 0 and 2π to repetitive or periodic signals—is a cornerstone in the analysis of oscillatory signals across diverse fields, from neuroscience to robotics, where it is fundamental, e.g. to understanding coordination in neural networks, cardiorespiratory coupling and human−robot interaction. However, existing methods are often limited to offline processing and/or constrained to one-dimensional signals. In this article, we introduce ROPE, which, to the best of our knowledge, is the first phase-estimation algorithm capable of (i) handling signals of arbitrary dimension and (ii) operating in real time, with minimal error. ROPE identifies repetitions within the signal to segment it into (pseudo-)periods and assigns phase values by performing efficient, tractable searches over previous signal segments. We extensively validate the algorithm on a variety of signal types, including trajectories from chaotic dynamical systems, human motion-capture data and electrocardiographic recordings. Our results demonstrate that ROPE is robust against noise and signal drift and achieves significantly superior performance compared with state-of-the-art phase-estimation methods. This advancement enables real-time analysis of complex biological rhythms, opening new pathways, for example, for early diagnosis of pathological rhythm disruptions and developing rhythm-based therapeutic interventions in neurological and cardiovascular disorders.",
+      "url": "https://doi.org/10.1098/rsif.2025.0751",
+      "source": "crossref",
+      "published": "2026-3-11",
+      "categories": [],
+      "doi": "10.1098/rsif.2025.0751",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:30.064236",
+      "scores": {
+        "capitalize": 4,
+        "novelty": 6,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 4.2
+      },
+      "gaps_detected": [
+        "limited to"
+      ],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.788273"
+    },
+    {
+      "id": "fb894c358a40a1f7",
+      "title": "<i>Serf</i>\n                    : Streaming Error-Bounded Floating-Point Compression",
+      "authors": [
+        "Ruiyuan Li",
+        "Zechao Chen",
+        "Ruyun Lu",
+        "Xiaolong Xu",
+        "Guangchao Yang",
+        "Chao Chen",
+        "Jie Bao",
+        "Yu Zheng"
+      ],
+      "abstract": "In IoT (Internet of Things) scenarios, massive floating-point time series data are generated in a streaming manner and transmitted within limited bandwidth for real-time analysis. To enhance the efficiency, it is acknowledged to compress the data before transmission. Existing floating-point compression methods are either for batched compression that may cause long delays, or for streaming lossless compression that has an unsatisfactory compression ratio when certain errors are allowed. In this paper, we propose the first &lt;u&gt;S&lt;/u&gt;treaming &lt;u&gt;ER&lt;/u&gt;ror-bounded &lt;u&gt;F&lt;/u&gt;loating-point compression\n                    Serf\n                    , which has two implementations:\n                    Serf-Qt\n                    and\n                    Serf-XOR\n                    .\n                    Serf-Qt\n                    first quantizes each floating-point value into an integer, and then encodes the integer with Elias gamma coding.\n                    Serf-XOR\n                    is the first lossy floating-point compression based on the XORing operation. To enhance the compression ratio of\n                    Serf-XOR\n                    , we propose a novel data offset technique to increase the leading zeros of the XORed values, and design a novel approximation technique to search for an error-qualified value that produces an XORed value with many trailing zeros. To improve the compression efficiency, we propose a pruning strategy to accelerate the process of approximated values search. We further build a streaming transmission prototype system based on a real development board, and deploy the proposed methods to it. Extensive experiments using 13 datasets show that, compared with 17 competitors, both\n                    Serf-Qt\n                    and\n                    Serf-XOR\n                    enjoy remarkable compression ratios with high efficiency in streaming scenarios. The transmission experiments based on the proposed system also showcase that\n                    Serf-XOR\n                    always takes the least overall time when the bandwidth is limited.",
+      "url": "https://doi.org/10.1145/3725353",
+      "source": "crossref",
+      "published": "2025-6-17",
+      "categories": [],
+      "doi": "10.1145/3725353",
+      "citation_count": 3,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:31.940599",
+      "scores": {
+        "capitalize": 3,
+        "novelty": 7,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 4.2
+      },
+      "gaps_detected": [],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.790543"
+    },
+    {
+      "id": "43e943dcbf207371",
+      "title": "SwiftTCR: Efficient Computational Docking protocol of TCRpMHC-I Complexes Using Restricted Rotation Matrices",
+      "authors": [
+        "Parizi, F. M.",
+        "Aarts, Y. J. M.",
+        "Smit, N.",
+        "Roran A R, D.",
+        "Diepenbroek, D.",
+        "Krösschell, W. A.",
+        "Thijs, L.",
+        "Tepperik, J.",
+        "Eerden, S.",
+        "Marzella, D. F.",
+        "Ramakrishnan, G.",
+        "Xue, L. C."
+      ],
+      "abstract": "The T cells ability to discern self and non-self depends on its T cell receptor (TCR), which recognizes peptides presented by MHC molecules. Understanding this TCR-peptide-MHC (TCRpMHC) interaction is important for cancer immunotherapy design, tissue transplantation, pathogen identification, and autoimmune disease treatments. Understanding the intricacies of TCR recognition, encapsulated in TCRpMHC structures, remains challenging due to the immense diversity of TCRs (>108/individual), rendering experimental determination and general-purpose computational docking impractical. Addressing this gap, we have developed a rapid integrative modeling protocol leveraging unique docking patterns in TCRpMHC complexes. Built upon PIPER, our pipeline significantly cuts down FFT rotation sets, exploiting the consistent polarized docking angle of TCRs at pMHC. Additionally, our ultra-fast structure superimposition tool, GradPose, accelerates clustering. It models a case in 3-4 minutes on 12 CPUs, showcasing a speedup of up to 25-40 times compared to the ClusPro webserver. On a benchmark set of 38 TCRpMHC class I (TCRpMHC-I) complexes, our protocol outperforms the state-of-the-art docking tools in model quality. This protocol can potentially provide structural information to TCR repertoires targeting specific peptides. Its computational efficiency can also enrich existing pMHC-specific single-cell sequencing TCR data, facilitating the development of structure-based deep learning (DL) algorithms. These insights are essential for understanding T cell recognition and specificity, advancing the development of therapeutic interventions.",
+      "url": "https://doi.org/10.1101/2024.05.27.596020",
+      "source": "biorxiv",
+      "published": "2026-03-10",
+      "categories": [
+        "bioinformatics"
+      ],
+      "doi": "10.1101/2024.05.27.596020",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:21.278033",
+      "scores": {
+        "capitalize": 5,
+        "novelty": 4,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 4.0
+      },
+      "gaps_detected": [],
+      "relevance_hits": [
+        "benchmark"
+      ],
+      "analysis_timestamp": "2026-03-13T23:26:33.786267"
+    },
+    {
+      "id": "23819bf77464f6b9",
+      "title": "Zapit: Open Source Random-Access Photostimulation For Neuroscience",
+      "authors": [
+        "Lohse, M.",
+        "Gauld, O. M.",
+        "Skretowska, M. T.",
+        "Masood, A.",
+        "Bao, C.",
+        "Li, J.",
+        "Miska, N.",
+        "Nabbefeld, G.",
+        "Pajot-Moric, Q.",
+        "Townsend, S.",
+        "Vincent, P.",
+        "Yang, A.",
+        "Zervogiannis, N.",
+        "Akrami, A.",
+        "Duan, C. A.",
+        "Erlich, J. C.",
+        "Hofer, S. B.",
+        "Mrsic-Flogel, T. D.",
+        "Coen, P.",
+        "Campbell, R. A."
+      ],
+      "abstract": "Optogenetic tools are indispensable for understanding the causal neural mechanisms underlying animal behavior. Opsins provide millisecond-precision control over genetically defined neural populations, but this is critically dependent on associated hardware and software for targeted light delivery. Optic-fibres are suitable for certain experiments, but fiber implantation can be invasive and limits flexibility of spatial targeting. In contrast, random-access laser-scanning optogenetic systems provide far greater flexibility for targeting distributed cortical areas. However, these systems can be technically challenging to build, and at present no general-purpose open-source solution is available. Here we present  Zapit, a complete open-source platform for spatio-temporally precise random-access laser-scanning optogenetic experiments in head-fixed mice. We describe the system, quantify its performance, validate its physiological effect on cortical activity, and show results from proof-of-principle cortical photoinhibition experiments in behaving mice.",
+      "url": "https://doi.org/10.1101/2024.02.12.579892",
+      "source": "biorxiv",
+      "published": "2026-03-07",
+      "categories": [
+        "neuroscience"
+      ],
+      "doi": "10.1101/2024.02.12.579892",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:21.278033",
+      "scores": {
+        "capitalize": 3,
+        "novelty": 4,
+        "feasibility": 6,
+        "connection": 2,
+        "overall": 3.8
+      },
+      "gaps_detected": [],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.780703"
+    },
+    {
+      "id": "7739f27c883664b3",
+      "title": "Network stochastic resonance under higher-order interactions",
+      "authors": [
+        "Zheng Wang",
+        "Jinjie Zhu",
+        "Xianbin Liu"
+      ],
+      "abstract": "Abstract\n                  Although stochastic resonance (SR) phenomena are ubiquitous across various complex systems, the influence mechanisms of higher-order interactions remain elusive. Here, we investigate SR in coupled phase oscillators with three-body interactions on ring networks. The system features periodic modulation of three-body coupling strength and additive noise. Our analysis reveals that periodic modulation of three-body coupling creates time-varying potential wells that alternately become shallow and deep, enabling novel noise-enhanced processing mechanisms. Using signal-to-noise ratio (SNR) and mean response amplitude as complementary metrics, we find characteristic resonance peaks at intermediate noise levels, with stronger driving and lower frequencies enhancing the resonance effect. Weaker pairwise coupling amplifies resonance effects, while moderate network connectivity appears optimal compared to extensive connections. Our findings characterize network SR (NSR) under higher-order interactions and suggest design strategies for noise-enhanced signal processing.",
+      "url": "https://doi.org/10.1098/rspa.2025.0945",
+      "source": "crossref",
+      "published": "2026-3-1",
+      "categories": [],
+      "doi": "10.1098/rspa.2025.0945",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:30.064236",
+      "scores": {
+        "capitalize": 3,
+        "novelty": 5,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 3.8
+      },
+      "gaps_detected": [],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.790543"
+    },
+    {
+      "id": "4ce48311ae4e0cdd",
+      "title": "Stimulating amyloid-β clearance in cerebral amyloid angiopathy with low-sodium oxybate and/or non-invasive vagus nerve stimulation (Clear-Brain): study protocol for a randomised pre-post trial",
+      "authors": [
+        "Sanne E Schriemer",
+        "Lydiane Hirschler",
+        "Ellis S van Etten",
+        "Erik W van Zwet",
+        "Gert Jan Lammers",
+        "Eric J Liebler",
+        "Marianne A A van Walderveen",
+        "Annelies M Slats",
+        "Adriaan C G M van Es",
+        "Marcel M Verbeek",
+        "Matthias J P van Osch",
+        "Marieke J H Wermer",
+        "Rolf Fronczek"
+      ],
+      "abstract": "Introduction\n                    Cerebral amyloid angiopathy (CAA) is caused by the accumulation of amyloid-beta (Aβ) in the cerebrovasculature. The glymphatic system is thought to be involved in the clearance of cerebral waste products, including Aβ. Stimulation of the glymphatic system through enhancing deep sleep with low-sodium oxybate (LXB) or inhibition of cortical spreading depolarisations via non-invasive vagus nerve stimulation (nVNS) could potentially increase clearance of Aβ and hence improve disease course.\n                  \n                  \n                    Methods and analysis\n                    We will perform a pre-post trial to assess whether treatment with LXB, nVNS or a combination of both interventions can enhance the clearance of Aβ in patients with CAA. A total of 60 participants, 30 with sporadic CAA and 30 with Dutch-type CAA, will be randomly assigned to receive either LXB, nVNS or both interventions, resulting in three groups (20 in each group: LXB, nVNS and both). The study spans 6 months, comprising a 3-month observational phase and a 3-month intervention phase. The primary outcome measure will be the morning levels of Aβ40 and Aβ42 in cerebrospinal fluid (CSF) before and after the intervention. We will assess possible disease progression with (non-)haemorrhagic imaging markers on 7-Tesla MRI at baseline, before and after intervention, as a secondary outcome. Additionally, the activity of the glymphatic system by means of fluid dynamics will be assessed with CSF-Selective T2-weighted Readout with Acceleration and Mobility encoding (CSF-STREAM) on 7-Tesla MRI.\n                  \n                  \n                    Ethics and dissemination\n                    The study was reviewed and approved by the Medical Research Ethics Committee Leiden The Hague Delft (P23.100) on 8 April 2024. The first participant was enrolled on 27 March 2025. Study results will be published in peer-reviewed journals and presented at scientific conferences. Additionally, study updates and results will be shared with participants via our newsletter twice a year.\n                  \n                  \n                    Trial registration\n                    \n                      EU CT number 2023–5 06 128-10-00, Universal Trial Number U1111-1295-1113, ClinicalTrials.gov\n                      NCT06421532\n                      .",
+      "url": "https://doi.org/10.1136/bmjopen-2025-113194",
+      "source": "crossref",
+      "published": "2026-3",
+      "categories": [],
+      "doi": "10.1136/bmjopen-2025-113194",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:33.776691",
+      "scores": {
+        "capitalize": 3,
+        "novelty": 5,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 3.8
+      },
+      "gaps_detected": [],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.794038"
+    },
+    {
+      "id": "a97a15d83b72aeab",
+      "title": "Consumption of Reinforcing Solutions Engages Dynamic Activityof the Prelimbic Cortical Outputs",
+      "authors": [
+        "Rinker, J. A.",
+        "Kutlu, M. G.",
+        "Knapp, J.",
+        "Hoffman, M.",
+        "Wukitsch, T. J.",
+        "Calipari, E. S.",
+        "McMahan, C. S.",
+        "Baker, G. H.",
+        "Woodward, J. J.",
+        "Mulholland, P. J."
+      ],
+      "abstract": "The medial prefrontal cortex integrates information about salience and valence of stimuli, including rewarding solutions like alcohol and sucrose, and regulates aspects of alcohol seeking and consumption. However, our understanding of how cortical outputs encode alcohol consumption is limited. Using fiber photometry to measure calcium activity in putative prelimbic (PrL) glutamatergic projection neurons, we show similar but distinct patterns of activity during the peri-consummatory phase in response to consumption of water (non-deprived conditions), ethanol (20% v/v), or sucrose (1% w/v). PrL population activity appears to track hedonic value, as GCaMP6f signals ramped immediately preceding bouts for water, ethanol, and sucrose, and the signal scaled with presumed hedonic value, i.e., water<ethanol<sucrose. Further, using machine learning, population activity of PrL neurons prior to consumption was sufficient to predict both consumption of and distinguish between these different solutions. To assess valence encoding, we adulterated the ethanol solution with quinine, a bitter tastant. In non-dependent mice, calcium activity surrounding drinking bouts was reduced, paralleling the decreased consumption of quinine-adulterated ethanol. This effect was not present in ethanol dependent mice, suggesting altered hedonic value of the adulterated solution either due to reduced sensitivity to the aversiveness of quinine or increased sensitivity to the reinforcing value of ethanol. The global population of PrL glutamatergic neurons also display sustained GCaMP6f 'up-states' that last tens to hundreds of seconds, which were longer and larger when consummatory bouts occurred. Overall, our results demonstrate a functional signature in PrL neurons that differs across solutions and is disrupted by ethanol dependence.",
+      "url": "https://doi.org/10.1101/2023.04.04.535635",
+      "source": "biorxiv",
+      "published": "2026-03-12",
+      "categories": [
+        "neuroscience"
+      ],
+      "doi": "10.1101/2023.04.04.535635",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:21.278033",
+      "scores": {
+        "capitalize": 3,
+        "novelty": 4,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 3.5
+      },
+      "gaps_detected": [],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.780703"
+    },
+    {
+      "id": "3542fa6dabcf78bd",
+      "title": "The majority of axonal mitochondria in mammalian neuronslack mitochondrial DNA and do not produce ATP",
+      "authors": [
+        "Hirabayashi, Y.",
+        "Lewis, T. L.",
+        "Du, Y.",
+        "Zamponi, E.",
+        "Kneis, P.",
+        "Jones, J. U.",
+        "Decker, A.",
+        "Coceano, G.",
+        "Alvelid, J.",
+        "Kikuchi, M.",
+        "Tsuboi, M.",
+        "Suga, S.",
+        "Shibayama, K.",
+        "Paul, M.",
+        "Virga, D. M.",
+        "Hamilton, S.",
+        "Morgan, A.",
+        "Beckstead, M. J.",
+        "Colarusso, P.",
+        "SHUTT, T. J.",
+        "Takahashi, Y.",
+        "Gaublomme, J.",
+        "Testa, I.",
+        "Polleux, F."
+      ],
+      "abstract": "In neurons of the mammalian central nervous system (CNS), axonal mitochondria are thought to be indispensable for supplying ATP during energy-consuming processes such as neurotransmitter release. We have previously shown that glutamatergic excitatory cortical pyramidal neurons (CPNs) are characterized by a striking compartmentalization of mitochondrial structure. Axonal mitochondria are maintained at a small uniform size ([~]1 microns length) by high levels of MFF-dependent fission, whereas dendritic mitochondria form a highly fused network of mitochondria throughout the entire dendritic arbor(1, 2). Here, we tested whether these striking structural differences reflect functional and molecular compartmentalization. Using four independent techniques, we reveal that in CPNs as well as in two subtypes of GABAergic inhibitory cortical interneurons and neuromodulatory dopaminergic neurons of the substantia nigra, the majority of axonal, but not dendritic, mitochondria lack mitochondrial DNA (mtDNA) in vivo. We also show that axonal mitochondria are depleted in both mtDNA-encoded mRNAs and proteins compared to dendritic mitochondria. Timelapse imaging establishes that most mitochondria entering nascent dendritic and axonal processes from the soma are small and lack mtDNA. Using dynamic, optical imaging of genetically encoded sensors for ATP and pH targeted to the mitochondrial matrix, we demonstrate that in axons of CPNs, but not in their dendrites, mitochondrial F1F0-ATP synthase (Complex V) functions in a reverse way, hydrolyzing ATP and extruding H+ out of the matrix to maintain mitochondrial membrane potential. Our results indicate that in neurons of the mammalian CNS, the majority of axonal mitochondria lack mtDNA and likely do not play a major role in ATP generation, despite playing other functions such as regulation of neurotransmission via presynaptic Ca2+ buffering(1, 3-5).",
+      "url": "https://doi.org/10.1101/2024.02.12.579972",
+      "source": "biorxiv",
+      "published": "2026-03-06",
+      "categories": [
+        "neuroscience"
+      ],
+      "doi": "10.1101/2024.02.12.579972",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:21.278033",
+      "scores": {
+        "capitalize": 3,
+        "novelty": 4,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 3.5
+      },
+      "gaps_detected": [],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.780703"
+    },
+    {
+      "id": "b441820a371ffe94",
+      "title": "GLP-1R agonists activate human hypothalamic neurons",
+      "authors": [
+        "Mazzaferro, S.",
+        "Chen, H.-J. C.",
+        "Cahn, O.",
+        "Yang, A.",
+        "Shepilov, D.",
+        "Seah, E.",
+        "Chen, J.",
+        "Jawahar, B.",
+        "Alcaino, C.",
+        "Macarelli, V.",
+        "Mali, I.",
+        "Tadross, J. A.",
+        "Gribble, F.",
+        "Reimann, F.",
+        "Marioni, J.",
+        "Merkle, F. T."
+      ],
+      "abstract": "Drugs like semaglutide (a.k.a. Ozempic/Wegovy) that activate the glucagon-like peptide-1 receptor (GLP-1R) are a promising therapy for obesity and type 2 diabetes (T2D). Animal studies suggest that these drugs likely function by stimulating GLP-1R on appetite-suppressing neuron populations in the brain, but it is still unclear how they act to reduce food intake in humans. We therefore generated appetite-regulatory hypothalamic neurons from human pluripotent stem cells (hPSCs) to study their responses to GLP-1R agonists by calcium imaging and electrophysiology. We found that hPSC-derived proopiomelanocortin (POMC) and other hypothalamic neuron subtypes expressed GLP1R mRNA, and many of these neurons robustly responded to GLP-1R agonists by membrane depolarization, increased action potential firing, and extracellular calcium influx that persisted long after agonist withdrawal. The observed GLP-1R-induced response was likely mediated by the activation of PKA and L-type calcium channels, and led to significant changes in gene expression. These findings provide mechanistic insight into how GLP-1R agonists may suppress appetite in humans.",
+      "url": "https://doi.org/10.1101/2024.04.02.587825",
+      "source": "biorxiv",
+      "published": "2026-03-13",
+      "categories": [
+        "neuroscience"
+      ],
+      "doi": "10.1101/2024.04.02.587825",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:21.278033",
+      "scores": {
+        "capitalize": 3,
+        "novelty": 4,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 3.5
+      },
+      "gaps_detected": [],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.783255"
+    },
+    {
+      "id": "c14b67b9f34c59ed",
+      "title": "Loss of precise auditory sampling as a sign of value-driven visual attentional capture",
+      "authors": [
+        "Harcevnicow, R. C.",
+        "Sanchez-Costa, T.",
+        "Carboni, A.",
+        "Constantino, F. C."
+      ],
+      "abstract": "Conditioning sensory signals endows persistent salience that influences attention, even after they no longer connect with rewards. As distractors shape multisensory target processing, conditioning phenomena remain poorly understood in relation to continuous sensory encoding. We investigate the effects of value-driven attentional capture by visual cues on the ability to reliably phase-lock cortical activity to temporal modulations of sound in audiovisual (AV) displays. Listening to periodically-modulated sound, observers discriminated between two visual object streams flickering at different rates, searching for an AV match. Also in view were peripheral color cues, used to evaluate how they modulate participant tracking fidelity as a result of color-reward associative training. Behavioral and electroencephalography (EEG) recordings (N=31) show that performance impoverished in presence of colors previously associated with reward, and so did tracking reliability measured by phase locking of AV responses. Decreased temporal precision predicted participants reward-driven distraction, evidencing the attentional shift away from the multimodal target timing structure. Loss of consistency was furthermore present in auditory response estimates, suggesting value-driven attentional capture withdraws cortical tracking fidelity across the senses. The findings are consistent with inter-modal competition at times when incentive salience cues overtake top-down tracking of multisensory streams connected in time.",
+      "url": "https://doi.org/10.1101/2024.04.07.588471",
+      "source": "biorxiv",
+      "published": "2026-03-09",
+      "categories": [
+        "neuroscience"
+      ],
+      "doi": "10.1101/2024.04.07.588471",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:21.278033",
+      "scores": {
+        "capitalize": 3,
+        "novelty": 4,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 3.5
+      },
+      "gaps_detected": [],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.784261"
+    },
+    {
+      "id": "39b4f27246be5015",
+      "title": "A prefrontal cortex-lateral hypothalamus circuit controls stress-driven increased food intake",
+      "authors": [
+        "Supiot, L. F.",
+        "Kooij, K.",
+        "Du, W.",
+        "Benschop, C.",
+        "Nicolson, S.",
+        "Haak, R.",
+        "Wolterink-Donselaar, I.",
+        "Luijendijk, M.",
+        "Riga, D.",
+        "Adan, R.",
+        "Poorthuis, R.",
+        "Meye, F. J."
+      ],
+      "abstract": "Stress can drive overconsumption of high-fat foods. The medial prefrontal cortex (mPFC) is implicated in such stress-eating, but the underlying circuit mechanisms remain unclear. Here we show that mPFC projections to the lateral hypothalamus (LHA) are required for stress-induced fat intake in male mice. We find that mPFC-LHA stimulation in sated states increases fat intake. Social stress acutely engages mPFC-LHA neurons, and inhibiting this pathway selectively prevents stress-driven excess fat intake. Circuit mapping shows that mPFC neurons innervate GABAergic and glutamatergic LHA (LHAVGLUT2) neurons, but that social stress preferentially engages mPFC-LHAVGLUT2 neurons and causes plasticity at mPFC-LHAVGLUT2 synapses. Specifically, stress weakens mPFC synapses onto LHAVGLUT2 neurons that curtail food intake, while strengthening mPFC synapses onto midbrain-projecting LHAVGLUT2 neurons linked to stress-eating. We show that LHAVGLUT2 neurons are required downstream mPFC targets for transforming stress into heightened fat intake. Overall, we identify the mPFC-LHA as a multi-branched network, indispensable for stress-eating.",
+      "url": "https://doi.org/10.1101/2024.05.02.592146",
+      "source": "biorxiv",
+      "published": "2026-03-08",
+      "categories": [
+        "neuroscience"
+      ],
+      "doi": "10.1101/2024.05.02.592146",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:21.278033",
+      "scores": {
+        "capitalize": 3,
+        "novelty": 4,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 3.5
+      },
+      "gaps_detected": [],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.784261"
+    },
+    {
+      "id": "1b07b607e6d5435a",
+      "title": "Functional specialization of mPFC-BLA and mPFC-NAc pathways in affective state representation",
+      "authors": [
+        "Lai, C.-H.",
+        "Park, G.",
+        "Xu, P.",
+        "Sun, X.",
+        "Ge, Q.",
+        "Jin, Z.",
+        "Betts, S.",
+        "Liu, X.",
+        "Liu, Q.-s.",
+        "Simha, R.",
+        "Zeng, C.",
+        "Lu, H.",
+        "Du, J."
+      ],
+      "abstract": "Effective emotional processing, crucial for adaptive behavior, is mediated by the medial prefrontal cortex (mPFC) via connections to the basolateral amygdala (BLA) and nucleus accumbens (NAc), traditionally considered functionally similar in modulating reward and aversion responses. However, the functional specialization of the mPFC[-&gt;]BLA and mPFC[-&gt;]NAc pathways in representing affective states remains unclear. We found that while overall firing patterns appeared consistent across emotional states, deeper analysis revealed distinct variabilities. Specifically, mPFC[-&gt;]BLA neurons, especially \"center-ON\" neurons, exhibited heightened activity during behaviors classically associated with anxiety-like states, suggesting their involvement in aversive behavioral regulation. Conversely, mPFC[-&gt;]NAc neurons were more active during exploratory and approach-related behaviors, implicating them in the processing of positively valenced behavioral states. Notably, mPFC[-&gt;]NAc neurons showed significant pattern decorrelation during social interactions, suggesting a pivotal role in processing social preference. Additionally, chronic emotional states affected these pathways differently: positively valenced contexts enhanced mPFC[-&gt;]NAc activity, while negatively valenced conditions boosted mPFC[-&gt;]BLA activity. Consistent with this behavioral divergence, repeated win/loss outcomes in the tube test were associated with elevated corticosterone levels in loser mice, indicating that repeated social competition produces measurable physiological responses linked to social hierarchy. These findings challenge the assumed functional similarity and highlight distinct correlational patterns, suggesting potential, but not yet causally established, roles of mPFC[-&gt;]BLA and mPFC[-&gt;]NAc pathways in shaping emotional states.",
+      "url": "https://doi.org/10.1101/2024.05.28.596238",
+      "source": "biorxiv",
+      "published": "2026-03-10",
+      "categories": [
+        "neuroscience"
+      ],
+      "doi": "10.1101/2024.05.28.596238",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:21.278033",
+      "scores": {
+        "capitalize": 3,
+        "novelty": 4,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 3.5
+      },
+      "gaps_detected": [],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.786267"
+    },
+    {
+      "id": "4405a83148d4750b",
+      "title": "Determinants of untimely receipt and non-receipt of routine childhood immunisation in Ebonyi state based on the Adapted Omale INDEPT FORCIS Framework and recommendations for policy and practice: a qualitative study",
+      "authors": [
+        "Ugwu I Omale",
+        "Chimaobi C Iwegbulam",
+        "Louisa C Ekwuazi",
+        "Chidinma I Amuzie",
+        "Cordis O Ikegwuonu",
+        "Glory E Nkwo",
+        "Richard L Ewah"
+      ],
+      "abstract": "Objectives\n                    The significant morbidity and mortalities from, and the recurrent outbreaks of, the vaccine-preventable infectious diseases (VPDs) of childhood could be due not only to non-receipt of recommended vaccinations but also to untimely receipt, which impairs the validity of immunisation coverage and protection against VPDs. This study explored the determinants of untimely receipt and non-receipt of routine childhood immunisation and made recommendations for policy and practice.\n                  \n                  \n                    Design\n                    This qualitative study was based on the Adapted Omale INDEPT FORCIS Framework – Determinants of Routine Childhood Vaccination Receipt Conceptual Framework.\n                  \n                  \n                    Study setting and participants\n                    From 22 August 2022 to 9 September 2022, 15 semi-structured, face-to-face focus group discussions were conducted in English, pidgin English and the local language with 127 purposively selected consenting parents of infants aged 0–2 months (with other key community members) and primary healthcare workers involved in the provision of routine childhood immunisation in Ebonyi state, Nigeria.\n                  \n                  \n                    Analysis\n                    Data analysis involved deductive (and some inductive) thematic analysis.\n                  \n                  \n                    Results\n                    There were many underlying determinants of untimely receipt and non-receipt of routine childhood immunisation, which included individual-related factors (mothers’ unfavourable experiences and perceptions and lack of knowledge about childhood diseases, vaccines/vaccinations and the vaccination system, relocation/travel from place of residence, children and/or mothers being ill); childhood disease-related, vaccination-related and the vaccination system-related factors (diseases not always severe/fatal, vaccinations causing side-effects, vaccination system constraints in availability, accessibility, affordability and acceptability); family and other individual-related factors; and broader context-related sociopolitical, cultural, economic, infrastructural, historic and health system factors.\n                  \n                  \n                    Conclusion\n                    The evidence demonstrates many specific and fundamental complex and interrelated determinants of untimely receipt and non-receipt of routine childhood immunisation and emphasises the need for multifaceted and innovative actions in dealing with the determinants in the drive to address the high morbidity and mortalities and recurring outbreaks of VPDs in Ebonyi state, Nigeria, and similar settings.",
+      "url": "https://doi.org/10.1136/bmjopen-2025-105991",
+      "source": "crossref",
+      "published": "2026-3",
+      "categories": [],
+      "doi": "10.1136/bmjopen-2025-105991",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:31.940599",
+      "scores": {
+        "capitalize": 3,
+        "novelty": 4,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 3.5
+      },
+      "gaps_detected": [],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.790543"
+    },
+    {
+      "id": "55e88863f8603452",
+      "title": "Burden of atherosclerosis, cardiovascular risk factors and atrial fibrillation in individuals with covert brain infarcts in late midlife: the Akershus Cardiac Examination 1950 Study",
+      "authors": [
+        "Håkon Ihle-Hansen",
+        "Marte M Walle-Hansen",
+        "Trygve Berge",
+        "Hege Ihle-Hansen",
+        "Peter Selmer Rønningen",
+        "Torbjørn Omland",
+        "Helge Røsjø",
+        "Arnljot Tveit",
+        "Mona Beyer",
+        "Kjetil Steine",
+        "Magnus Nakrem Lyngbakken",
+        "Ole Morten Rønning",
+        "Thea Vigen",
+        "Terry Quinn",
+        "Alan Cameron",
+        "Guri Hagberg"
+      ],
+      "abstract": "Background\n                    Current expert consensus statements generally suggest cardiovascular risk assessment, including atrial fibrillation (AF) screening, on detection of covert brain infarctions (CBIs). However, evidence to guide management of CBI remains limited. In the absence of randomised clinical trials specifically targeting CBI populations, observational studies comparing individuals with and without CBI can provide insights into the prevalence and burden of cardiovascular risk factors.\n                  \n                  \n                    Objectives\n                    We aimed to compare the burden of atherosclerosis and cardiovascular risk factors in participants with CBI to those without, and to explore the yield of AF screening in individuals with CBI.\n                  \n                  \n                    Design\n                    A prospective population-based birth cohort study including men and women born in 1950 and resident in Akershus County, Norway.\n                  \n                  \n                    Setting\n                    The two hospitals serving the population of Akershus county, Norway.\n                  \n                  \n                    Participants\n                    Participants included in the Akershus Cardiac Examination (ACE) 1950 study who also underwent a subsequent MRI examination were eligible for this study.\n                  \n                  \n                    Outcome measures\n                    Cardiovascular risk assessment was performed at study inclusion (2012–2015). Carotid ultrasound was used to quantify atherosclerosis through a carotid plaque score, and CHA₂DS₂-VA and Systematic COronary Risk Evaluation 2 (SCORE2) scores were calculated to estimate cardiovascular risk. Brain MRI was performed in a randomly selected, blood pressure-stratified subset of participants (2016–2024). CBI was defined as focal lesions consistent with ischaemia in the absence of clinical stroke. Participants with CBI were offered 72-hour ambulatory ECG monitoring for AF detection.\n                  \n                  \n                    Results\n                    MRI was performed in 414 of 3706 (11%) participants in the ACE 1950 Study. The mean age at the time of the MRI examination was 70.2±2.3 years, and 165 (41%) were women. CBI was identified in 54 participants (13%), of whom 45 (83%) completed 72-hour ambulatory ECG monitoring. There were no differences in mean carotid plaque score, SCORE2 or CHA₂DS₂-VA score between participants with CBI compared with those with normal MRI findings. AF was detected in one (2%) participant with CBI.\n                  \n                  \n                    Conclusions\n                    In this community-based cohort of individuals in late midlife, individuals with CBI did not have an increased cardiovascular risk compared with those without, as indicated by SCORE2, CHA₂DS₂-VA score, age-appropriate carotid plaque burden and a low prevalence of AF.\n                  \n                  \n                    Trial registration number\n                    \n                      URL:\n                      https://www.clinicaltrials.gov\n                      . Unique identifier:\n                      NCT01555411\n                      .",
+      "url": "https://doi.org/10.1136/bmjopen-2025-114232",
+      "source": "crossref",
+      "published": "2026-3",
+      "categories": [],
+      "doi": "10.1136/bmjopen-2025-114232",
+      "citation_count": 0,
+      "extra": {},
+      "fetched_at": "2026-03-13T23:26:33.776691",
+      "scores": {
+        "capitalize": 3,
+        "novelty": 4,
+        "feasibility": 5,
+        "connection": 2,
+        "overall": 3.5
+      },
+      "gaps_detected": [],
+      "relevance_hits": [],
+      "analysis_timestamp": "2026-03-13T23:26:33.794038"
+    }
+  ],
+  "connections": [
+    {
+      "paper_a": {
+        "title": "Reservoir Computing for Macroeconomic Forecasting with Mixed Frequency Data",
+        "domain": "econ",
+        "id": "93617356f3dbcd3e"
+      },
+      "paper_b": {
+        "title": "Feedback control of recurrent circuits imposes dynamical constraints on learning",
+        "domain": "neuroscience",
+        "id": "514a73b0b528ebad"
+      },
+      "shared_methods": [
+        "recurrent"
+      ],
+      "connection_type": "cross_domain_technique"
+    },
+    {
+      "paper_a": {
+        "title": "Data-driven and machine-learning based prediction of wave propagation behavior in dam-break flood",
+        "domain": "Physics",
+        "id": "87e8ad3351a493b3"
+      },
+      "paper_b": {
+        "title": "Data-driven and machine-learning based prediction of wave propagation behavior in dam-break flood",
+        "domain": "Statistics",
+        "id": "87e8ad3351a493b3"
+      },
+      "shared_methods": [
+        "simulation",
+        "spectral"
+      ],
+      "connection_type": "cross_domain_technique"
+    }
+  ],
+  "summary": {
+    "top_5_titles": [
+      "Reservoir Computing for Macroeconomic Forecasting with Mixed Frequency Data",
+      "Data-driven and machine-learning based prediction of wave propagation behavior in dam-break flood",
+      "Brain-Inspired Hardware for Artificial Intelligence: Accelerated Learning in a Physical-Model Spiking Neural Network",
+      "Feedback control of recurrent circuits imposes dynamical constraints on learning",
+      "A Graph Neural Network Approach for High-Fidelity Thermospheric State Estimation"
+    ],
+    "avg_overall_score": 4.09,
+    "high_scoring_count": 0,
+    "gaps_found_total": 4,
+    "cross_domain_connections": 2
+  }
+}
