@@ -666,3 +666,7 @@ adult_subesophageal_zone_degree_preserved,MNIST,4000,0.9839,0.0100545116375065,3
 adult_central_complex_degree_preserved,CIFAR10,4000,0.5367,0.5286170449262808,622.27,12336010,16000000,30,0.001,42,adult_central_complex,degree_preserved,,,
 adult_mushroom_body_degree_preserved,FashionMNIST,4000,0.8951,0.1144885563712567,352.58,3184010,16000000,20,0.001,42,adult_mushroom_body,degree_preserved,,,
 celegans_herm_erdos_renyi,SequentialMNIST,419,0.098,,2032.39,5457,175561,10,0.001,44,celegans_herm,erdos_renyi,,,
+adult_mushroom_body,FashionMNIST,4000,0.8938,0.1228813259609043,7874.0,3184010,16000000,20,0.001,43,adult_mushroom_body,biological,,,
+adult_central_complex,CIFAR10,4000,0.5281,0.3807217408870171,8163.28,12336010,16000000,30,0.001,43,adult_central_complex,biological,,,
+adult_mushroom_body_erdos_renyi,FashionMNIST,4000,0.8471,0.2940446174830198,372.36,3184010,16000000,20,0.001,43,adult_mushroom_body,erdos_renyi,,,
+adult_mushroom_body_barabasi_albert,FashionMNIST,4000,0.8776,0.21327784880424538,9851.5,3184010,16000000,20,0.001,43,adult_mushroom_body,barabasi_albert,,,
