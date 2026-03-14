@@ -1,0 +1,18 @@
+{
+  "n_experiments": 59,
+  "n_organisms": 4,
+  "n_ctrl_types": 4,
+  "n_tasks": 1,
+  "overall_bio_mean": 0.9786083333333334,
+  "overall_bio_std": 0.0032233405408712444,
+  "overall_ctrl_mean": 0.9785127659574466,
+  "overall_ctrl_std": 0.0022617439424976,
+  "overall_cohens_d": 0.03858872602741036,
+  "overall_welch_p": 0.9242673099586909,
+  "h1_pearson_r": 0.7767289642304955,
+  "h1_p": 0.22327103576950447,
+  "h2_supported": false,
+  "loss_bio_lower": true,
+  "loss_cohens_d": 0.6962863718309654,
+  "loss_p": 0.0003904471368850524
+}
