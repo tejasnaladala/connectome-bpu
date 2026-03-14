@@ -11,3 +11,6 @@ output
 *.log
 resultsexperiment_log.txt
 5}
+data/raw/
+data/cifar10/
+*.feather
