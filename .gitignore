@@ -32,3 +32,4 @@ paper/{,
 
 # Claude internal
 .claude/
+CLAUDE.md
