@@ -14,3 +14,21 @@ resultsexperiment_log.txt
 data/raw/
 data/cifar10/
 *.feather
+
+# Paper build artifacts
+paper/node_modules/
+paper/~$*
+paper/*.tmp
+paper/convert_pdf*.py
+
+# Junk files from shell
+0
+4}]
+Linear(N
+RANDOM
+Random)
+bio
+paper/{,
+
+# Claude internal
+.claude/
