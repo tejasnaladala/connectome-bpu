@@ -1,35 +1,21 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
+*.egg-info/
+
+# Datasets that torchvision / scripts re-download on first run
 data/mnist/
 data/fashion_mnist/
-data/raw/
-*.egg-info/
-.env
-out
-output
-*.log
-resultsexperiment_log.txt
-5}
-data/raw/
 data/cifar10/
+
+# Large intermediate / raw artifacts
 *.feather
 
-# Paper build artifacts
-paper/node_modules/
-paper/~$*
-paper/*.tmp
-paper/convert_pdf*.py
+# Environment / secrets
+.env
 
-# Junk files from shell
-0
-4}]
-Linear(N
-RANDOM
-Random)
-bio
-paper/{,
-
-# Claude internal
-.claude/
-CLAUDE.md
+# Logs and scratch output
+*.log
+out
+output
