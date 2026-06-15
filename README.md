@@ -213,5 +213,14 @@ sweep is GPU-scale work and takes many hours; the small connectomes
 
 ## License
 
-No license file is included yet. Until one is added, the connectome source data
-remains under the terms of its original publications.
+**Code:** the source code, scripts, and documentation authored in this
+repository are released under the MIT License (see [`LICENSE`](LICENSE)).
+
+**Data:** the connectome datasets bundled under `data/` are *not* covered by the
+MIT License and are *not* relicensed by this repository. Each dataset remains
+under the license of its original publication (e.g. the adult *Drosophila*
+FlyWire data are CC BY-NC 4.0, non-commercial). They are redistributed here only
+to make the benchmark reproducible. If you reuse any connectome data you must
+comply with the license of its original source and cite the original
+publication, not just this repository. See [`DATA_LICENSE.md`](DATA_LICENSE.md)
+for the per-dataset terms and required citations.
