@@ -165,9 +165,7 @@ benchmarks/       one module per task + the runner orchestration
 analysis/         graph metrics, correlations, error analysis, figures
 scripts/          quick_status.py and deep_analysis.py (read the results CSV)
 data/
-  processed/      4 whole-animal connectome adjacency matrices (.npz)
-  subcircuits/    6 adult Drosophila region adjacency matrices (.npz)
-  raw/            source connectome files + standardization scripts
+  scripts/        download + standardization helpers (the connectome data is not bundled; see Reproducing)
 results/          all_results.csv and derived analysis tables
 run_experiments.py  the driver that produced results/all_results.csv
 ```
@@ -177,6 +175,15 @@ run_experiments.py  the driver that produced results/all_results.csv
 Requires Python 3.11, PyTorch, NumPy, SciPy, pandas, scikit-learn, NetworkX,
 and tqdm. The image datasets are not committed; torchvision downloads MNIST,
 FashionMNIST, and CIFAR-10 automatically on first run.
+
+The connectome data is not bundled. Each source connectome carries its own
+publication license (the adult *Drosophila* FlyWire data are CC BY-NC 4.0), so
+this repo does not redistribute them. `results/all_results.csv` is committed, so
+every number above is inspectable and checkable with `scripts/quick_status.py`
+without downloading anything. To re-run the benchmark end to end, fetch and
+standardize the connectomes with the helpers in `data/scripts/` and the original
+sources in [`DATA_LICENSE.md`](DATA_LICENSE.md); the FlyWire regions must be
+obtained from flywire.ai under their terms.
 
 ```bash
 # Fast sanity check on the models and null generators (CPU, seconds)
@@ -216,11 +223,8 @@ sweep is GPU-scale work and takes many hours; the small connectomes
 **Code:** the source code, scripts, and documentation authored in this
 repository are released under the MIT License (see [`LICENSE`](LICENSE)).
 
-**Data:** the connectome datasets bundled under `data/` are *not* covered by the
-MIT License and are *not* relicensed by this repository. Each dataset remains
-under the license of its original publication (e.g. the adult *Drosophila*
-FlyWire data are CC BY-NC 4.0, non-commercial). They are redistributed here only
-to make the benchmark reproducible. If you reuse any connectome data you must
-comply with the license of its original source and cite the original
-publication, not just this repository. See [`DATA_LICENSE.md`](DATA_LICENSE.md)
-for the per-dataset terms and required citations.
+**Data:** the connectome datasets are *not* bundled in this repository. Each
+remains under the license of its original publication (e.g. the adult
+*Drosophila* FlyWire data are CC BY-NC 4.0, non-commercial). Fetch them from
+their original sources, listed with the required citations in
+[`DATA_LICENSE.md`](DATA_LICENSE.md), and comply with each source's terms.
