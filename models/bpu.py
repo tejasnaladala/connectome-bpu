@@ -1,11 +1,9 @@
 """Biological Processing Unit (BPU) models.
 
 Core neural network modules that use fixed biological connectome wiring
-as the recurrent weight matrix, with learnable input/output projections.
+as the recurrent weight matrix and train only a linear output readout.
 """
 
-import math
-import numpy as np
 import scipy.sparse as sp
 import torch
 import torch.nn as nn
@@ -59,14 +57,14 @@ class BPU(nn.Module):
 
         # Learnable projections
         self.input_proj = nn.Linear(d_in, self.N)
+        self.input_proj.requires_grad_(False)
         self.output_proj = nn.Linear(self.N, d_out)
 
         # Fixed recurrent weight: transpose of adjacency
         W_rec = _sparse_to_dense_tensor(adjacency).T
         self.register_buffer("W_rec", W_rec)
 
-        # Bias for recurrent layer (learnable)
-        self.recurrent_bias = nn.Parameter(torch.zeros(self.N))
+        self.register_buffer("recurrent_bias", torch.zeros(self.N))
 
         # Activation
         if activation not in ACTIVATIONS:
@@ -139,14 +137,14 @@ class SequentialBPU(nn.Module):
 
         # Learnable projections
         self.input_proj = nn.Linear(d_in_per_step, self.N)
+        self.input_proj.requires_grad_(False)
         self.output_proj = nn.Linear(self.N, d_out)
 
         # Fixed recurrent weight: transpose of adjacency
         W_rec = _sparse_to_dense_tensor(adjacency).T
         self.register_buffer("W_rec", W_rec)
 
-        # Bias for recurrent layer (learnable)
-        self.recurrent_bias = nn.Parameter(torch.zeros(self.N))
+        self.register_buffer("recurrent_bias", torch.zeros(self.N))
 
         # Activation
         if activation not in ACTIVATIONS:

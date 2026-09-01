@@ -6,16 +6,21 @@ Usage:
     python run_experiments.py --task MNIST     # Single task
     python run_experiments.py --organism ciona # Single organism
 """
-import torch
-import numpy as np
+import hashlib
+import argparse
+import json
+import os
+from pathlib import Path
+import sys
+import time
+import traceback
+
 import pandas as pd
-import scipy.sparse as sp
 from scipy.sparse import load_npz
-import os, sys, csv, json, glob, time, argparse, traceback
+import torch
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from models.bpu import BPU, SequentialBPU
 from models.controls import generate_all_controls
 from benchmarks.mnist import run_mnist
 from benchmarks.fashion_mnist import run_fashion_mnist
@@ -27,7 +32,8 @@ from benchmarks.cartpole import run_cartpole
 RESULTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
-RESULTS_CSV = os.path.join(RESULTS_DIR, "all_results.csv")
+PROTOCOL_VERSION = "cab-v2-readout-only-density-matched"
+RESULTS_CSV = os.path.join(RESULTS_DIR, "cab_v2_results.csv")
 
 # Benchmark config
 BENCHMARKS = {
@@ -71,20 +77,53 @@ def get_device():
     return "cpu"
 
 
-def load_all_connectomes():
-    """Load all biological connectomes."""
-    base = os.path.dirname(os.path.abspath(__file__))
+def _load_verified_connectome(adjacency_path, connectome_type, public_name=None):
+    adjacency_path = Path(adjacency_path)
+    stem = adjacency_path.name.removesuffix("_adjacency.npz")
+    metadata_path = adjacency_path.with_name(f"{stem}_metadata.json")
+    if not metadata_path.exists():
+        raise ValueError(f"Missing provenance metadata for {adjacency_path.name}")
+
+    with metadata_path.open(encoding="utf-8") as handle:
+        metadata = json.load(handle)
+    provenance = metadata.get("provenance", {})
+    if provenance.get("source_kind") != "measured":
+        raise ValueError(
+            f"{stem} is not a measured connectome and cannot enter the benchmark"
+        )
+
+    for field in ("source_url", "citation", "artifact_sha256"):
+        if not provenance.get(field):
+            raise ValueError(f"{stem} provenance is missing {field}")
+
+    actual_digest = hashlib.sha256(adjacency_path.read_bytes()).hexdigest()
+    if actual_digest != provenance["artifact_sha256"]:
+        raise ValueError(f"SHA-256 mismatch for {adjacency_path.name}")
+
+    return {
+        "adj": load_npz(adjacency_path),
+        "type": connectome_type,
+        "provenance": provenance,
+        "name": public_name or stem,
+    }
+
+
+def load_all_connectomes(base_dir=None):
+    """Load only measured connectomes with digest-verified provenance."""
+    base = Path(base_dir) if base_dir is not None else Path(__file__).resolve().parent
     connectomes = {}
 
     # Whole organisms
-    for f in sorted(glob.glob(os.path.join(base, "data/processed/*_adjacency.npz"))):
-        name = os.path.basename(f).replace("_adjacency.npz", "")
-        connectomes[name] = {"adj": load_npz(f), "type": "whole_organism"}
+    for path in sorted((base / "data" / "processed").glob("*_adjacency.npz")):
+        name = path.name.removesuffix("_adjacency.npz")
+        connectomes[name] = _load_verified_connectome(path, "whole_organism")
 
     # Sub-circuits
-    for f in sorted(glob.glob(os.path.join(base, "data/subcircuits/*_adjacency.npz"))):
-        name = "adult_" + os.path.basename(f).replace("_adjacency.npz", "")
-        connectomes[name] = {"adj": load_npz(f), "type": "subcircuit"}
+    for path in sorted((base / "data" / "subcircuits").glob("*_adjacency.npz")):
+        name = "adult_" + path.name.removesuffix("_adjacency.npz")
+        connectomes[name] = _load_verified_connectome(
+            path, "subcircuit", public_name=name
+        )
 
     return connectomes
 
@@ -118,8 +157,19 @@ def check_vram_fit(N, task, device):
     return True, batch_size
 
 
-def run_single_experiment(adj, name, organism, bpu_type, task_name, task_config,
-                          device, seed, batch_size_override=None):
+def run_single_experiment(
+    adj,
+    name,
+    organism,
+    bpu_type,
+    task_name,
+    task_config,
+    device,
+    seed,
+    batch_size_override=None,
+    source_artifact_sha256=None,
+    biological_edge_count=None,
+):
     """Run a single experiment and return result dict."""
     func = task_config["func"]
     epochs = task_config["epochs"]
@@ -144,6 +194,12 @@ def run_single_experiment(adj, name, organism, bpu_type, task_name, task_config,
     result = func(**kwargs)
     result["organism"] = organism
     result["type"] = bpu_type
+    result["protocol_version"] = PROTOCOL_VERSION
+    result["source_artifact_sha256"] = source_artifact_sha256
+    result["graph_edge_count"] = int(adj.nnz)
+    result["biological_edge_count"] = int(
+        biological_edge_count if biological_edge_count is not None else adj.nnz
+    )
     return result
 
 
@@ -239,7 +295,11 @@ def main():
                         print(f"\n  [{n_done+1}] {org_name} / {task_name} / bio / seed={seed}")
                         result = run_single_experiment(
                             adj, org_name, org_name, "biological",
-                            task_name, task_config, device, seed, batch_size
+                            task_name, task_config, device, seed, batch_size,
+                            source_artifact_sha256=org_info["provenance"][
+                                "artifact_sha256"
+                            ],
+                            biological_edge_count=adj.nnz,
                         )
                         all_results.append(result)
                         completed.add(key)
@@ -261,7 +321,11 @@ def main():
                                 print(f"  [{n_done+1}] {ctrl_full_name} / {task_name} / seed={seed}")
                                 result = run_single_experiment(
                                     ctrl_adj, ctrl_full_name, org_name, ctrl_name,
-                                    task_name, task_config, device, seed, batch_size
+                                    task_name, task_config, device, seed, batch_size,
+                                    source_artifact_sha256=org_info["provenance"][
+                                        "artifact_sha256"
+                                    ],
+                                    biological_edge_count=adj.nnz,
                                 )
                                 all_results.append(result)
                                 completed.add(key)

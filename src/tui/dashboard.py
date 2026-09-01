@@ -25,7 +25,7 @@ from rich.text import Text
 from rich import box
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-RESULTS_CSV = ROOT / "results" / "all_results.csv"
+RESULTS_CSV = ROOT / "results" / "cab_v2_results.csv"
 METRICS_CSV = ROOT / "results" / "graph_metrics.csv"
 
 ORGANISMS = [

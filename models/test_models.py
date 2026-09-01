@@ -3,21 +3,19 @@
 Run with: python models/test_models.py
 """
 
+from pathlib import Path
 import sys
 import traceback
 import numpy as np
 import scipy.sparse as sp
 import torch
 
-from bpu import BPU, SequentialBPU
-from controls import (
-    erdos_renyi,
-    barabasi_albert,
-    watts_strogatz,
-    degree_preserved_shuffle,
-    generate_all_controls,
-)
-from baselines import MLPBaseline, SmallTransformer
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from models.bpu import BPU, SequentialBPU
+from models.controls import generate_all_controls
+from models.baselines import MLPBaseline, SmallTransformer
 
 
 # ---------------------------------------------------------------------------
@@ -73,22 +71,18 @@ def test_bpu_fixed_weights():
     print("  PASS test_bpu_fixed_weights")
 
 
-def test_bpu_learnable_projections():
-    """BPU must have at least 2 learnable parameter groups (input + output proj)."""
+def test_bpu_readout_only():
+    """Only the output readout may be trainable in the strict protocol."""
     adj = make_test_adjacency(50)
     model = BPU(adj, 10, 5)
     learnable_groups = [
         name for name, p in model.named_parameters() if p.requires_grad
     ]
-    assert len(learnable_groups) >= 2, (
-        f"Expected >= 2 learnable param groups, got {len(learnable_groups)}: "
-        f"{learnable_groups}"
-    )
-    # Verify input_proj and output_proj weights are present
-    param_names = set(learnable_groups)
-    assert "input_proj.weight" in param_names, "Missing input_proj.weight"
-    assert "output_proj.weight" in param_names, "Missing output_proj.weight"
-    print("  PASS test_bpu_learnable_projections")
+    assert set(learnable_groups) == {
+        "output_proj.weight",
+        "output_proj.bias",
+    }, f"Unexpected trainable parameters: {learnable_groups}"
+    print("  PASS test_bpu_readout_only")
 
 
 def test_sequential_bpu_forward():
@@ -139,7 +133,6 @@ def test_controls_different_wiring():
     bio_adj = make_test_adjacency(N, density=0.15, seed=99)
     controls = generate_all_controls(bio_adj, seed=42)
 
-    bio_dense = bio_adj.toarray()
     bio_nonzero = set(zip(*bio_adj.nonzero()))
 
     for name, ctrl_adj in controls.items():
@@ -206,7 +199,7 @@ def test_transformer_baseline():
 ALL_TESTS = [
     test_bpu_forward,
     test_bpu_fixed_weights,
-    test_bpu_learnable_projections,
+    test_bpu_readout_only,
     test_sequential_bpu_forward,
     test_controls_match_size,
     test_controls_different_wiring,

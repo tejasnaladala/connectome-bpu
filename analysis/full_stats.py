@@ -6,7 +6,7 @@ import warnings, sys, io
 warnings.filterwarnings('ignore')
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-df = pd.read_csv('results/all_results.csv')
+df = pd.read_csv('results/cab_v2_results.csv')
 controls = ['erdos_renyi', 'barabasi_albert', 'watts_strogatz', 'degree_preserved']
 bio = df[df['type'] == 'biological']
 ctrl = df[df['type'] != 'biological']

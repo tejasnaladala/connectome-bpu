@@ -53,7 +53,7 @@ def compute_correlations(metrics_csv=None, results_csv=None, task="MNIST"):
     if metrics_csv is None:
         metrics_csv = os.path.join(RESULTS_DIR, "graph_metrics.csv")
     if results_csv is None:
-        results_csv = os.path.join(RESULTS_DIR, "all_results.csv")
+        results_csv = os.path.join(RESULTS_DIR, "cab_v2_results.csv")
 
     metrics_df = pd.read_csv(metrics_csv)
     results_df = pd.read_csv(results_csv)
@@ -140,7 +140,7 @@ def compute_correlations(metrics_csv=None, results_csv=None, task="MNIST"):
 def compute_all_task_correlations(metrics_csv=None, results_csv=None):
     """Run correlation analysis across all benchmark tasks."""
     if results_csv is None:
-        results_csv = os.path.join(RESULTS_DIR, "all_results.csv")
+        results_csv = os.path.join(RESULTS_DIR, "cab_v2_results.csv")
 
     results_df = pd.read_csv(results_csv)
     tasks = results_df["task"].unique()

@@ -7,6 +7,7 @@ Converts each connectome to:
 Usage:
   python data/scripts/standardize.py
 """
+import hashlib
 import numpy as np
 from scipy.sparse import csr_matrix, save_npz, load_npz
 import pandas as pd
@@ -22,7 +23,15 @@ PROCESSED_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__f
 RAW_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "raw")
 
 
-def standardize_connectome(name, edge_df, pre_col, post_col, weight_col=None, output_dir=None):
+def standardize_connectome(
+    name,
+    edge_df,
+    pre_col,
+    post_col,
+    weight_col=None,
+    output_dir=None,
+    provenance=None,
+):
     """Convert edge list DataFrame to standardized sparse adjacency matrix.
 
     Args:
@@ -32,6 +41,8 @@ def standardize_connectome(name, edge_df, pre_col, post_col, weight_col=None, ou
         post_col: column name for postsynaptic neuron ID
         weight_col: column name for synapse count/weight (None = all edges weight 1)
         output_dir: where to save (default: data/processed/)
+        provenance: measured-source record containing source_kind, source_url,
+            and citation. The standardized artifact digest is added here.
 
     Returns:
         tuple: (adj_sparse, metadata_dict)
@@ -43,6 +54,11 @@ def standardize_connectome(name, edge_df, pre_col, post_col, weight_col=None, ou
     if output_dir is None:
         output_dir = PROCESSED_DIR
     os.makedirs(output_dir, exist_ok=True)
+    if provenance is None:
+        raise ValueError(f"{name} is missing provenance metadata")
+    for field in ("source_kind", "source_url", "citation"):
+        if not provenance.get(field):
+            raise ValueError(f"{name} provenance is missing {field}")
 
     # Clean edge dataframe
     edge_df = edge_df.dropna(subset=[pre_col, post_col])
@@ -80,7 +96,10 @@ def standardize_connectome(name, edge_df, pre_col, post_col, weight_col=None, ou
         adj = adj / max_weight
 
     # Save sparse matrix
-    save_npz(os.path.join(output_dir, f"{name}_adjacency.npz"), adj)
+    artifact_path = os.path.join(output_dir, f"{name}_adjacency.npz")
+    save_npz(artifact_path, adj)
+    with open(artifact_path, "rb") as artifact:
+        artifact_sha256 = hashlib.sha256(artifact.read()).hexdigest()
 
     # Save metadata
     metadata = {
@@ -96,7 +115,11 @@ def standardize_connectome(name, edge_df, pre_col, post_col, weight_col=None, ou
             "pre": pre_col,
             "post": post_col,
             "weight": weight_col
-        }
+        },
+        "provenance": {
+            **provenance,
+            "artifact_sha256": artifact_sha256,
+        },
     }
     with open(os.path.join(output_dir, f"{name}_metadata.json"), "w") as f:
         json.dump(metadata, f, indent=2, default=str)
@@ -107,8 +130,6 @@ def standardize_connectome(name, edge_df, pre_col, post_col, weight_col=None, ou
 
 def auto_detect_columns(df):
     """Try to auto-detect pre/post/weight columns from a DataFrame."""
-    cols = [c.lower() for c in df.columns]
-
     # Common pre-synaptic column names
     pre_candidates = ['pre', 'pre_id', 'pre_root_id', 'source', 'from', 'presynaptic',
                       'pre_pt_root_id', 'pre_neuron', 'neuron_1', 'from_id']
@@ -153,6 +174,13 @@ def standardize_all():
         if name in ['FlyConnectome', 'scripts']:
             continue
 
+        provenance_path = os.path.join(organism_dir, "provenance.json")
+        if not os.path.exists(provenance_path):
+            print(f"\n[{name}] Missing provenance.json - skipping")
+            continue
+        with open(provenance_path, encoding="utf-8") as handle:
+            provenance = json.load(handle)
+
         csv_files = glob.glob(os.path.join(organism_dir, "*.csv"))
         parquet_files = glob.glob(os.path.join(organism_dir, "*.parquet"))
 
@@ -176,7 +204,14 @@ def standardize_all():
 
                     if pre_col and post_col:
                         print(f"  Auto-detected: pre={pre_col}, post={post_col}, weight={weight_col}")
-                        adj, meta = standardize_connectome(name, df, pre_col, post_col, weight_col)
+                        adj, meta = standardize_connectome(
+                            name,
+                            df,
+                            pre_col,
+                            post_col,
+                            weight_col,
+                            provenance=provenance,
+                        )
                         organisms[name] = (adj, meta)
                     else:
                         print(f"  WARNING: Could not auto-detect columns. Available: {list(df.columns)}")
@@ -194,7 +229,14 @@ def standardize_all():
 
                 if pre_col and post_col:
                     print(f"  Auto-detected: pre={pre_col}, post={post_col}, weight={weight_col}")
-                    adj, meta = standardize_connectome(name, df, pre_col, post_col, weight_col)
+                    adj, meta = standardize_connectome(
+                        name,
+                        df,
+                        pre_col,
+                        post_col,
+                        weight_col,
+                        provenance=provenance,
+                    )
                     organisms[name] = (adj, meta)
                 else:
                     print(f"  WARNING: Could not auto-detect columns for {fpath}")
