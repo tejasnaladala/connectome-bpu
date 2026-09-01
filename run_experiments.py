@@ -27,7 +27,6 @@ from benchmarks.fashion_mnist import run_fashion_mnist
 from benchmarks.cifar10 import run_cifar10
 from benchmarks.sequential_mnist import run_sequential_mnist
 from benchmarks.audio import run_audio
-from benchmarks.cartpole import run_cartpole
 
 RESULTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 os.makedirs(RESULTS_DIR, exist_ok=True)
@@ -42,7 +41,6 @@ BENCHMARKS = {
     "CIFAR10": {"func": run_cifar10, "epochs": 30, "batch_size": 128},
     "SequentialMNIST": {"func": run_sequential_mnist, "epochs": 10, "batch_size": 64},
     "Audio": {"func": run_audio, "epochs": 15, "batch_size": 64},
-    "CartPole": {"func": run_cartpole, "epochs": 300, "batch_size": 1},
 }
 
 SEEDS = [42, 43, 44]

@@ -185,6 +185,10 @@ def test_corrected_protocol_writes_to_a_new_result_artifact() -> None:
     assert Path(run_experiments.RESULTS_CSV).name == "cab_v2_results.csv"
 
 
+def test_cab_v2_excludes_training_return_as_an_rl_evaluation() -> None:
+    assert "CartPole" not in run_experiments.BENCHMARKS
+
+
 def test_each_new_result_carries_protocol_and_source_provenance() -> None:
     adjacency = _adjacency(n=12, edge_count=30)
 
