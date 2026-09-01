@@ -7,7 +7,8 @@
     "The input projection and recurrent bias were trainable although the published protocol said only the output readout learned.",
     "The Barabasi-Albert and Watts-Strogatz controls did not match the biological graph edge count.",
     "Ninety Ciona rows were generated from a synthetic stand-in rather than the measured connectome.",
-    "Committed result rows do not carry source-artifact digests sufficient to reconstruct provenance."
+    "Committed result rows do not carry source-artifact digests sufficient to reconstruct provenance.",
+    "CartPole reports the final training episodes rather than a separate evaluation rollout."
   ],
   "superseded_by": "cab-v2-readout-only-density-matched",
   "note": "Retained for auditability only. Re-run the corrected protocol before reporting a biological advantage."

@@ -31,7 +31,7 @@ jobs:
         run: uv sync --frozen --group dev
 
       - name: Run tests
-        run: uv run pytest -q
+        run: uv run python -m pytest -q
 
       - name: Run static checks
         run: >-

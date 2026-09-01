@@ -8,14 +8,16 @@ inductive bias for small neural systems?
 
 **No biological advantage is currently claimed.**
 
-An audit of the original experiment found four protocol failures:
+An audit of the original experiment found five protocol failures:
 
 - the input projection and recurrent bias learned even though the stated method
   said only the output readout was trained;
 - the Barabasi-Albert and Watts-Strogatz nulls had substantially fewer edges
   than the biological graph;
 - 90 Ciona rows used a synthetic stand-in rather than the measured connectome;
-- result rows were not bound to immutable source-data fingerprints.
+- result rows were not bound to immutable source-data fingerprints;
+- CartPole reported the final training episodes rather than a separate
+  evaluation rollout.
 
 The original 757-row artifact remains in `results/all_results.csv` so the
 failure is inspectable. `results/ARTIFACT_STATUS.json` marks it as invalidated,
@@ -105,6 +107,8 @@ bypass provenance checks and write incompatible results.
   depend on its seed and dimensionality.
 - The task set is a convenience sample, not evidence of general computational
   superiority or biological mechanism.
+- CartPole is excluded from CAB v2 until it has a separately seeded,
+  update-free evaluation protocol.
 - Multiple organisms, tasks, nulls, and seeds require a predeclared statistical
   analysis with multiplicity control.
 
