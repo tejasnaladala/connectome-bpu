@@ -1,31 +1,18 @@
 # Connectome Architecture Benchmark
 
-An empirical test of a narrow question: after controlling for size, edge count,
-and recurrent-weight distribution, does biological wiring provide a useful
-inductive bias for small neural systems?
+**CAB v2 is implemented.** `cab-v2-readout-only-density-matched` is the only
+supported experiment protocol.
 
-## Current status
+**Local verification: 25 tests passed on 2026-09-01** with
+`python -m pytest -q`. The suite exercises the model constraints, null
+generators, provenance checks, result isolation, and retired entry points.
 
-**No biological advantage is currently claimed.**
+**Full benchmark run: pending.** No complete CAB v2 result artifact exists, and
+no biological advantage is claimed.
 
-An audit of the original experiment found five protocol failures:
-
-- the input projection and recurrent bias learned even though the stated method
-  said only the output readout was trained;
-- the Barabasi-Albert and Watts-Strogatz nulls had substantially fewer edges
-  than the biological graph;
-- 90 Ciona rows used a synthetic stand-in rather than the measured connectome;
-- result rows were not bound to immutable source-data fingerprints;
-- CartPole reported the final training episodes rather than a separate
-  evaluation rollout.
-
-The original 757-row artifact remains in `results/all_results.csv` so the
-failure is inspectable. `results/ARTIFACT_STATUS.json` marks it as invalidated,
-and the analysis scripts refuse to report it as a finding unless an explicit
-forensic override is supplied.
-
-The corrected protocol is implemented and tested. It has **not** been run at
-full scale, so there is no replacement benchmark result yet.
+CAB tests whether measured biological wiring provides a useful inductive bias
+for small neural systems after controlling network size, edge count, and the
+recurrent-weight distribution.
 
 ## Corrected protocol
 
@@ -51,7 +38,7 @@ directed degree-preserving edge shuffle.
 
 ## What is verified
 
-The fast test suite checks:
+The local test suite checks:
 
 - feedforward and sequential output shapes;
 - fixed recurrent weights;
@@ -68,8 +55,25 @@ Run it with:
 
 ```bash
 python -m pytest -q
-python models/test_models.py
 ```
+
+## Invalidated historical artifact
+
+The original 757-row artifact remains in `results/all_results.csv` for audit.
+`results/ARTIFACT_STATUS.json` marks it `invalidated_exploratory`, and the
+analysis scripts require an explicit forensic override before they will report
+its contents as findings.
+
+The audit identified five protocol failures:
+
+- the input projection and recurrent bias learned even though the stated method
+  trained only the output readout;
+- the Barabasi-Albert and Watts-Strogatz nulls had substantially fewer edges
+  than the biological graph;
+- 90 Ciona rows used a synthetic stand-in rather than the measured connectome;
+- result rows lacked immutable source-data fingerprints;
+- CartPole reported final training episodes instead of a separate evaluation
+  rollout.
 
 ## Running CAB v2
 
