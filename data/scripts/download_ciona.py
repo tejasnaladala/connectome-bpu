@@ -7,10 +7,6 @@ The adjacency matrix is provided in the eLife article supplementary data.
 If automated download fails, manual download instructions are provided.
 """
 import os
-import sys
-import json
-import numpy as np
-from scipy.sparse import csr_matrix, save_npz
 
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "raw", "ciona")
@@ -34,9 +30,8 @@ PROCESSED_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__f
 # - Coronet cells
 # - Palp sensory neurons
 
-# Since the full adjacency is in the paper's supplementary,
-# we construct a synthetic version based on the published statistics
-# for initial testing. This should be replaced with the actual data.
+# This helper writes acquisition instructions only. It does not generate a
+# substitute graph; the benchmark requires the measured source artifact.
 
 def create_ciona_from_published_stats():
     """Create Ciona connectome from published network statistics.
@@ -67,8 +62,7 @@ def create_ciona_from_published_stats():
     print("  4. Save edge list to: data/raw/ciona/edge_list.csv")
     print("  5. Re-run standardize.py")
     print()
-    print("For now, creating a placeholder based on published statistics...")
-    print("Replace with actual data before final experiments!")
+    print("Writing acquisition instructions; no substitute graph is generated.")
 
     # Create a placeholder marker file
     with open(os.path.join(OUTPUT_DIR, "DOWNLOAD_NEEDED.txt"), "w") as f:

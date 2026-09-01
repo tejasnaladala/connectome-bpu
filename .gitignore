@@ -3,6 +3,9 @@ __pycache__/
 *.pyc
 *.pyo
 *.egg-info/
+.pytest_cache/
+.ruff_cache/
+.venv/
 
 # Datasets that torchvision / scripts re-download on first run
 data/mnist/

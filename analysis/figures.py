@@ -70,7 +70,7 @@ ORGANISM_SIZES = {
 
 def load_results():
     """Load all results and graph metrics."""
-    results = pd.read_csv(os.path.join(RESULTS_DIR, "all_results.csv"))
+    results = pd.read_csv(os.path.join(RESULTS_DIR, "cab_v2_results.csv"))
     try:
         metrics = pd.read_csv(os.path.join(RESULTS_DIR, "graph_metrics.csv"))
     except:

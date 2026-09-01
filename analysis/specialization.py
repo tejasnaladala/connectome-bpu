@@ -32,7 +32,7 @@ def test_specialization(results_csv=None):
         dict of hypothesis results
     """
     if results_csv is None:
-        results_csv = os.path.join(RESULTS_DIR, "all_results.csv")
+        results_csv = os.path.join(RESULTS_DIR, "cab_v2_results.csv")
 
     df = pd.read_csv(results_csv)
     bio = df[df["type"] == "biological"]
@@ -139,7 +139,7 @@ def test_sexual_dimorphism(results_csv=None):
         dict of results per task
     """
     if results_csv is None:
-        results_csv = os.path.join(RESULTS_DIR, "all_results.csv")
+        results_csv = os.path.join(RESULTS_DIR, "cab_v2_results.csv")
 
     df = pd.read_csv(results_csv)
     bio = df[df["type"] == "biological"]

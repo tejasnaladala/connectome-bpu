@@ -36,6 +36,66 @@ def _ensure_csr(adj):
     return adj.tocsr()
 
 
+def _match_edge_count(adj_sparse, target_edges, rng):
+    """Match an off-diagonal directed graph to an exact edge count."""
+    adj = _ensure_csr(adj_sparse)
+    n = adj.shape[0]
+    max_edges = n * (n - 1)
+    if target_edges < 0 or target_edges > max_edges:
+        raise ValueError(
+            f"target_edges must be between 0 and {max_edges}, got {target_edges}"
+        )
+
+    coo = adj.tocoo()
+    edge_weights = {
+        (int(row), int(col)): float(weight)
+        for row, col, weight in zip(coo.row, coo.col, coo.data)
+        if row != col
+    }
+
+    if len(edge_weights) > target_edges:
+        edges = list(edge_weights)
+        remove_count = len(edge_weights) - target_edges
+        for index in rng.choice(len(edges), size=remove_count, replace=False):
+            edge_weights.pop(edges[int(index)])
+
+    while len(edge_weights) < target_edges:
+        remaining = target_edges - len(edge_weights)
+        batch_size = max(1024, remaining * 2)
+        rows = rng.randint(0, n, size=batch_size)
+        cols = rng.randint(0, n, size=batch_size)
+        weights = rng.uniform(0.0, 1.0, size=batch_size)
+        for row, col, weight in zip(rows, cols, weights):
+            edge = (int(row), int(col))
+            if row != col and edge not in edge_weights:
+                edge_weights[edge] = float(weight)
+                if len(edge_weights) == target_edges:
+                    break
+
+    if not edge_weights:
+        return sp.csr_matrix((n, n), dtype=np.float64)
+
+    edges = list(edge_weights)
+    rows = np.fromiter((edge[0] for edge in edges), dtype=np.int64)
+    cols = np.fromiter((edge[1] for edge in edges), dtype=np.int64)
+    weights = np.fromiter(
+        (edge_weights[edge] for edge in edges), dtype=np.float64
+    )
+    return sp.csr_matrix((weights, (rows, cols)), shape=(n, n))
+
+
+def _assign_weight_distribution(adj_sparse, source_weights, rng):
+    """Assign an exact shuffled source-weight multiset to a graph topology."""
+    coo = _ensure_csr(adj_sparse).tocoo()
+    weights = np.asarray(source_weights, dtype=np.float64).copy()
+    if coo.nnz != len(weights):
+        raise ValueError(
+            f"topology has {coo.nnz} edges but weight source has {len(weights)}"
+        )
+    rng.shuffle(weights)
+    return sp.csr_matrix((weights, (coo.row, coo.col)), shape=coo.shape)
+
+
 def erdos_renyi(N, density, seed=42):
     """Generate a directed Erdos-Renyi random graph.
 
@@ -56,7 +116,6 @@ def erdos_renyi(N, density, seed=42):
     n_edges = int(round(density * n_possible))
 
     # Sample edge indices without replacement
-    all_off_diag = []
     rows = []
     cols = []
     # Efficient: sample flat indices, convert to (row, col) excluding diagonal
@@ -93,9 +152,9 @@ def barabasi_albert(N, density=None, seed=42):
     rng = np.random.RandomState(seed)
 
     if density is not None:
-        # m edges per new node; total edges ~ m*(N - m)
-        # density ~ 2*m*(N-m) / (N*(N-1)) for undirected, halved for directed
-        m = max(1, int(round(density * N * (N - 1) / (2 * (N - 1)))))
+        target_edges = int(round(density * N * (N - 1)))
+        # This implementation creates approximately m*N directed edges.
+        m = max(1, int(round(target_edges / N)))
         m = min(m, N - 1)
     else:
         m = max(1, int(np.sqrt(N)))
@@ -136,7 +195,10 @@ def barabasi_albert(N, density=None, seed=42):
             degree[new_node] += 1
             degree[t] += 1
 
-    return _normalize_weights(adj_lil.tocsr())
+    result = adj_lil.tocsr()
+    if density is not None:
+        result = _match_edge_count(result, target_edges, rng)
+    return _normalize_weights(result)
 
 
 def watts_strogatz(N, density=None, p=0.1, seed=42):
@@ -158,9 +220,9 @@ def watts_strogatz(N, density=None, p=0.1, seed=42):
     rng = np.random.RandomState(seed)
 
     if density is not None:
-        # K neighbors on each side; total undirected edges ~ N*K
-        # density ~ 2*N*K / (N*(N-1)) => K ~ density*(N-1)/2
-        K = max(1, int(round(density * (N - 1) / 2)))
+        target_edges = int(round(density * N * (N - 1)))
+        # The ring contributes N*K edges before random orientation.
+        K = max(1, int(round(target_edges / N)))
     else:
         K = max(1, int(np.sqrt(N)) // 2)
 
@@ -203,7 +265,10 @@ def watts_strogatz(N, density=None, p=0.1, seed=42):
         else:
             adj_lil[v, u] = w
 
-    return _normalize_weights(adj_lil.tocsr())
+    result = adj_lil.tocsr()
+    if density is not None:
+        result = _match_edge_count(result, target_edges, rng)
+    return _normalize_weights(result)
 
 
 def degree_preserved_shuffle(adj_sparse, seed=42):
@@ -284,13 +349,22 @@ def generate_all_controls(bio_adj, seed=42):
         'degree_preserved', each mapping to a scipy CSR sparse matrix.
     """
     bio_adj = _ensure_csr(bio_adj)
+    bio_adj.eliminate_zeros()
     N = bio_adj.shape[0]
     n_possible = N * (N - 1) if N > 1 else 1
     density = bio_adj.nnz / n_possible
 
-    return {
+    topologies = {
         "erdos_renyi": erdos_renyi(N, density, seed=seed),
         "barabasi_albert": barabasi_albert(N, density=density, seed=seed + 1),
         "watts_strogatz": watts_strogatz(N, density=density, seed=seed + 2),
         "degree_preserved": degree_preserved_shuffle(bio_adj, seed=seed + 3),
+    }
+    return {
+        name: _assign_weight_distribution(
+            adjacency,
+            bio_adj.data,
+            np.random.RandomState(seed + 100 + index),
+        )
+        for index, (name, adjacency) in enumerate(topologies.items())
     }

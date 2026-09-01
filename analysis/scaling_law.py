@@ -31,14 +31,14 @@ def fit_scaling_law(results_csv=None, task="MNIST"):
     """Fit scaling law to BPU performance data.
 
     Args:
-        results_csv: path to results CSV (default: results/all_results.csv)
+        results_csv: path to results CSV (default: results/cab_v2_results.csv)
         task: which benchmark task to analyze
 
     Returns:
         dict with fit parameters, R-squared, p-values for each model
     """
     if results_csv is None:
-        results_csv = os.path.join(RESULTS_DIR, "all_results.csv")
+        results_csv = os.path.join(RESULTS_DIR, "cab_v2_results.csv")
 
     df = pd.read_csv(results_csv)
 
@@ -157,7 +157,7 @@ def fit_scaling_law(results_csv=None, task="MNIST"):
 def fit_all_tasks(results_csv=None):
     """Fit scaling laws across all benchmark tasks."""
     if results_csv is None:
-        results_csv = os.path.join(RESULTS_DIR, "all_results.csv")
+        results_csv = os.path.join(RESULTS_DIR, "cab_v2_results.csv")
 
     df = pd.read_csv(results_csv)
     tasks = df["task"].unique()

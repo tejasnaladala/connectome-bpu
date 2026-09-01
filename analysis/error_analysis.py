@@ -62,7 +62,7 @@ def effect_size_label(d):
 
 def run_analysis(csv_path=None):
     if csv_path is None:
-        csv_path = os.path.join(RESULTS_DIR, "all_results.csv")
+        csv_path = os.path.join(RESULTS_DIR, "cab_v2_results.csv")
 
     df = pd.read_csv(csv_path)
     n_total = len(df)

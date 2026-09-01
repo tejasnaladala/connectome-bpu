@@ -3,7 +3,11 @@ import numpy as np
 from scipy import stats
 import os
 
-CSV = os.path.join(os.path.dirname(__file__), '..', 'results', 'all_results.csv')
+from artifact_status import require_reportable_artifact
+
+RESULTS_DIR = os.path.join(os.path.dirname(__file__), '..', 'results')
+require_reportable_artifact(RESULTS_DIR)
+CSV = os.path.join(RESULTS_DIR, 'all_results.csv')
 df = pd.read_csv(CSV)
 
 bio = df[df['type'] == 'biological']
